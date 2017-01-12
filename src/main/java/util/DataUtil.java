@@ -10,7 +10,7 @@ public class DataUtil {
     public static Integer clientNum;
     public static Integer capacity;
     public static Double[][] distance;
-    public static Integer[] clientDemandArr;
+    public static int[] clientDemandArr;
 
     public static void importDataFromAVRP(String filePath) throws IOException {
         Double[] x_Axis = null;
@@ -23,7 +23,7 @@ public class DataUtil {
         while (!"EOF".equals((line = reader.readLine()).trim())) {
             if (line.startsWith("DIMENSION")) {
                 clientNum = Integer.valueOf(line.substring(12));
-                clientDemandArr = new Integer[clientNum];
+                clientDemandArr = new int[clientNum];
                 x_Axis = new Double[clientNum];
                 y_Axis = new Double[clientNum];
             }

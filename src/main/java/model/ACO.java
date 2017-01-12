@@ -22,7 +22,7 @@ public class ACO {
     private double[][] pheromone;   //信息素矩阵
     private double bestLen; //最佳长度
     private List<List<Integer>> bestTour;    //最佳路径
-    private int[] visitedCity;    //取值0或1，1表示已经访问过，0表示未访问过
+    //private int[] visitedCity;    //取值0或1，1表示已经访问过，0表示未访问过
 
     public ACO() {
         this.antNum = ConstUtil.ANT_NUM;
@@ -37,7 +37,6 @@ public class ACO {
                 //导入数据
                 importDataFromAVRP(filePath);
                 this.capacity = DataUtil.capacity;
-                visitedCity = new int[DataUtil.clientNum];
                 //初始化信息素矩阵
                 pheromone = new double[clientNum][clientNum];
                 for (int i = 0; i < clientNum; i++) {
@@ -47,10 +46,10 @@ public class ACO {
                 }
                 bestLen = Double.MAX_VALUE;
                 bestTour = new ArrayList<List<Integer>>();
-                //随机放置蚂蚁位置
+                //初始化蚂蚁
                 for (int i = 0; i < antNum; i++) {
                     ants[i] = new Ant(capacity);
-                    ants[i].init(visitedCity);
+                    ants[i].init();
                 }
 
             } catch (IOException e) {
@@ -70,12 +69,16 @@ public class ACO {
      */
     public void run() {
         //进行ITER_NUM次迭代
-        //for (int i = 0; i < ITER_NUM; i++) {
+        for (int i = 0; i < 10; i++) {
             //对于每一只蚂蚁
-            for (int j = 0; j < 1; j++) {
+            for (int j = 0; j < 3; j++) {
                 while (!ants[j].visitFinish()) {
                     ants[j].selectNextClient(pheromone);
                 }
+               /*for (int i=0;i<32;i++){
+                    ants[j].selectNextClient(pheromone);
+                }*/
+                System.out.println("ants[j].getLength()---"+ants[j].getLength());
                 if (ants[j].getLength() < bestLen) {
                     bestLen = ants[j].getLength();
                     bestTour = ants[j].getTour();
@@ -99,14 +102,14 @@ public class ACO {
             }*/
             updatePheromone();
             //初始化蚂蚁
-            visitedCity = new int[DataUtil.clientNum];
+            //visitedCity = new int[DataUtil.clientNum];
             for (int k3 = 0; k3 < antNum; k3++) {
                 ants[k3] = new Ant(capacity);
-                ants[k3].init(visitedCity);
+                ants[k3].init();
             }
             //打印最佳结果
             printOptimal();
-        //}
+        }
     }
 
     /**
