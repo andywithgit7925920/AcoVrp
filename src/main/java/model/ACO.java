@@ -5,6 +5,7 @@ import util.ConstUtil;
 import static util.DataUtil.*;
 
 import util.DataUtil;
+import util.MatrixUtil;
 import util.StringUtil;
 
 import java.io.IOException;
@@ -56,8 +57,8 @@ public class ACO {
                 System.err.print("filePath invalid!");
                 e.printStackTrace();
             }
-            System.out.println("capacity-->"+capacity);
-            System.out.println("clientNum-->"+clientNum);
+            System.out.println("capacity-->" + capacity);
+            System.out.println("clientNum-->" + clientNum);
 
         } else {
             System.err.print("filePath empty!");
@@ -69,16 +70,13 @@ public class ACO {
      */
     public void run() {
         //进行ITER_NUM次迭代
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             //对于每一只蚂蚁
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 2; j++) {
                 while (!ants[j].visitFinish()) {
                     ants[j].selectNextClient(pheromone);
                 }
-               /*for (int i=0;i<32;i++){
-                    ants[j].selectNextClient(pheromone);
-                }*/
-                System.out.println("ants[j].getLength()---"+ants[j].getLength());
+                System.out.println("[antsj].getLength()---" + ants[j].getLength());
                 if (ants[j].getLength() < bestLen) {
                     bestLen = ants[j].getLength();
                     bestTour = ants[j].getTour();
@@ -86,12 +84,21 @@ public class ACO {
                 //更新蚂蚁自身的信息素矩阵
                 for (int k1 = 0, len1 = ants[j].getTour().size(); k1 < len1; k1++) {
                     for (int k2 = 0, len2 = ants[j].getTour().get(k1).size(); k2 + 1 < len2; k2++) {
+                        System.out.println("ants["+j+"]="+1. / ants[j].getLength());
+                        System.out.println(ants[j].getTour().get(k1).get(k2).intValue()+"-->"+ants[j].getTour().get(k1).get(k2 + 1).intValue());
                         ants[j].getDelta()[ants[j].getTour().get(k1).get(k2).intValue()][ants[j].getTour().get(k1).get(k2 + 1).intValue()] = (1. / ants[j].getLength());
                         ants[j].getDelta()[ants[j].getTour().get(k1).get(k2 + 1).intValue()][ants[j].getTour().get(k1).get(k2).intValue()] = (1. / ants[j].getLength());
                     }
                 }
+                //MatrixUtil.printMatrix(pheromone);
+
             }
-            /*for (int y = 0;y<antNum;y++){
+            for (int k3 = 0; k3 < antNum; k3++) {
+                    ants[k3] = new Ant(capacity);
+                    ants[k3].init();
+                }
+            System.out.println("-----print delta-----");
+            for (int y = 0;y<antNum;y++){
                 for (int z1 = 0;z1<ants[y].getDelta().length;z1++){
                     for (int z2=0;z2<ants[y].getDelta()[z1].length;z2++){
                         System.out.print(ants[y].getDelta()[z1][z2]+"  ");
@@ -99,18 +106,16 @@ public class ACO {
                     System.out.print("\n");
                 }
                 System.out.println("============================");
-            }*/
+            }
             updatePheromone();
             //初始化蚂蚁
             //visitedCity = new int[DataUtil.clientNum];
-            for (int k3 = 0; k3 < antNum; k3++) {
-                ants[k3] = new Ant(capacity);
-                ants[k3].init();
-            }
+            //MatrixUtil.printMatrix(pheromone);
             //打印最佳结果
             printOptimal();
         }
     }
+
 
     /**
      * 打印最佳结果
@@ -119,8 +124,15 @@ public class ACO {
         System.out.println("The optimal length is: " + bestLen);
         System.out.println("The optimal tour is: ");
         for (int i = 0; i < bestTour.size(); i++) {
-            for (int j=0;j<bestTour.get(i).size();j++){
-                System.out.print(bestTour.get(i).get(j)+"-");
+            for (int j = 0; j < bestTour.get(i).size(); j++) {
+                System.out.print(bestTour.get(i).get(j) + "-");
+            }
+            System.out.print("\n");
+        }
+        System.out.println("The value of pheromone:");
+        for (int i=0;i<pheromone.length;i++){
+            for (int j=0;j<pheromone[i].length;j++){
+                System.out.print(pheromone[i][j] + "\t");
             }
             System.out.print("\n");
         }

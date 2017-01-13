@@ -68,7 +68,7 @@ public class Ant {
         //System.out.println("count sum");
         //System.out.println("allowClient------");
         //ArrayUtil.printArr(allowedClient);
-        for (int i=0;i<allowedClient.length;i++){
+        for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 sum += Math.pow(pheromone[currentClient][i], ALPHA) * Math.pow(1.0 / distance[currentClient][i], BETA);
             }
@@ -102,12 +102,12 @@ public class Ant {
         visitedClient[selectClient] = 1;
         allowedClient[selectClient] = 0;
         //将当前城市加入tour中
-        if (currentCicycle>=tour.size()){
+        if (currentCicycle >= tour.size()) {
             List<Integer> cicycle = new ArrayList<Integer>();
             cicycle.add(0);
             cicycle.add(selectClient);
             tour.add(cicycle);
-        }else {
+        } else {
             tour.get(currentCicycle).add(selectClient);
         }
         currentCapacity -= clientDemandArr[selectClient];

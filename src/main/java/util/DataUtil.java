@@ -9,7 +9,7 @@ import java.io.*;
 public class DataUtil {
     public static Integer clientNum;
     public static Integer capacity;
-    public static Double[][] distance;
+    public static double[][] distance;
     public static int[] clientDemandArr;
 
     public static void importDataFromAVRP(String filePath) throws IOException {
@@ -53,7 +53,7 @@ public class DataUtil {
             }
         }
         //计算距离矩阵
-        distance = new Double[clientNum][clientNum];
+        distance = new double[clientNum][clientNum];
         for (int i = 0; i < clientNum; i++) {
             distance[i][i] = 0.0;
             for (int j = i + 1; j < clientNum; j++) {
