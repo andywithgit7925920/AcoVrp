@@ -56,8 +56,6 @@ public class Ant {
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-
-
         //如果当前处在起始点，则下一步不能选择起始点
         if (currentClient == 0) {
             allowedClient[0] = 0;
@@ -85,9 +83,11 @@ public class Ant {
         //System.out.println("p-------");
         //ArrayUtil.printArr(p);
         //轮盘赌选择下一个城市
-        Random random = new Random(System.currentTimeMillis());
-        double selectP = random.nextDouble();
+
         //System.out.println("selectP------");
+        //Random random = new Random(System.currentTimeMillis());
+        //double selectP = random.nextDouble();
+        double selectP = Math.random();
         //System.out.println(selectP);
         int selectClient = 0;
         double sum1 = 0.f;
@@ -98,6 +98,8 @@ public class Ant {
                 break;
             }
         }
+        //System.out.println("selectClient--");
+        //System.out.println(selectClient);
         //从允许选择的城市中去除selectClient
         visitedClient[selectClient] = 1;
         allowedClient[selectClient] = 0;

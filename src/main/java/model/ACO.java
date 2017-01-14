@@ -70,35 +70,39 @@ public class ACO {
      */
     public void run() {
         //进行ITER_NUM次迭代
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < ITER_NUM; i++) {
             //对于每一只蚂蚁
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < antNum; j++) {
+                //System.out.println("第"+j+"只蚂蚁开始");
                 while (!ants[j].visitFinish()) {
                     ants[j].selectNextClient(pheromone);
                 }
-                System.out.println("[antsj].getLength()---" + ants[j].getLength());
+                //System.out.println("第"+j+"只蚂蚁总路径" + ants[j].getLength());
                 if (ants[j].getLength() < bestLen) {
                     bestLen = ants[j].getLength();
                     bestTour = ants[j].getTour();
                 }
                 //更新蚂蚁自身的信息素矩阵
+                //System.out.println("第"+j+"只蚂蚁更新自身信息素");
                 for (int k1 = 0, len1 = ants[j].getTour().size(); k1 < len1; k1++) {
                     for (int k2 = 0, len2 = ants[j].getTour().get(k1).size(); k2 + 1 < len2; k2++) {
-                        System.out.println("ants["+j+"]="+1. / ants[j].getLength());
-                        System.out.println(ants[j].getTour().get(k1).get(k2).intValue()+"-->"+ants[j].getTour().get(k1).get(k2 + 1).intValue());
+                        //System.out.println("ants["+j+"]="+1. / ants[j].getLength());
+                        //System.out.println(ants[j].getTour().get(k1).get(k2).intValue()+"-->"+ants[j].getTour().get(k1).get(k2 + 1).intValue());
                         ants[j].getDelta()[ants[j].getTour().get(k1).get(k2).intValue()][ants[j].getTour().get(k1).get(k2 + 1).intValue()] = (1. / ants[j].getLength());
                         ants[j].getDelta()[ants[j].getTour().get(k1).get(k2 + 1).intValue()][ants[j].getTour().get(k1).get(k2).intValue()] = (1. / ants[j].getLength());
                     }
                 }
-                //MatrixUtil.printMatrix(pheromone);
-
+                //System.out.println("The tour is: ");
+                /*for (int i1 = 0; i1 < ants[j].getTour().size(); i1++) {
+                    for (int j1 = 0; j1 < ants[j].getTour().get(i1).size(); j1++) {
+                        System.out.print(ants[j].getTour().get(i1).get(j1) + "-");
+                    }
+                    System.out.print("\n");
+                }*/
             }
-            for (int k3 = 0; k3 < antNum; k3++) {
-                    ants[k3] = new Ant(capacity);
-                    ants[k3].init();
-                }
-            System.out.println("-----print delta-----");
-            for (int y = 0;y<antNum;y++){
+
+            //System.out.println("-----打印 delta-----");
+            /*for (int y = 0;y<2;y++){
                 for (int z1 = 0;z1<ants[y].getDelta().length;z1++){
                     for (int z2=0;z2<ants[y].getDelta()[z1].length;z2++){
                         System.out.print(ants[y].getDelta()[z1][z2]+"  ");
@@ -106,14 +110,18 @@ public class ACO {
                     System.out.print("\n");
                 }
                 System.out.println("============================");
-            }
+            }*/
             updatePheromone();
+            for (int k3 = 0; k3 < antNum; k3++) {
+                ants[k3] = new Ant(capacity);
+                ants[k3].init();
+            }
             //初始化蚂蚁
             //visitedCity = new int[DataUtil.clientNum];
             //MatrixUtil.printMatrix(pheromone);
-            //打印最佳结果
-            printOptimal();
         }
+        //打印最佳结果
+        printOptimal();
     }
 
 
