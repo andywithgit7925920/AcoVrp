@@ -13,27 +13,29 @@ import java.util.*;
  * Created by ab792 on 2016/12/30.
  */
 public class Ant {
-    private List<List<Integer>> tour; //访问的城市列表
+    private Solution solution;
+    //private List<List<Integer>> tour; //访问的城市列表
     private int[] allowedClient;  //允许访问的城市
     private int[] visitedClient;    //取值0或1，1表示已经访问过，0表示未访问过
-    private Integer capacity;   //蚂蚁的载重量
-    private Double totalLen;
+    //private Integer capacity;   //蚂蚁的载重量
+    //private Double totalLen;
     private double[][] delta;   //信息素变化矩阵
-    private Integer firstClient;    //起始客户
-    private Integer currentClient;  //当前客户
-    private Integer currentCicycle;    //当前属于第几个循环
-    private Integer currentCapacity;    //当前载重量
+    //private Integer firstClient;    //起始客户
+    //private Integer currentClient;  //当前客户
+    //private Integer currentCicycle;    //当前属于第几个循环
+    //private Integer currentCapacity;    //当前载重量
 
     public Ant(Integer capacity) {
-        this.capacity = capacity;
-        tour = new ArrayList<List<Integer>>();
-        List<Integer> cicycle = new ArrayList<Integer>();
-        tour.add(cicycle);
+        //this.capacity = capacity;
+        //tour = new ArrayList<List<Integer>>();
+        //List<Integer> cicycle = new ArrayList<Integer>();
+        //tour.add(cicycle);
+
         allowedClient = new int[clientNum];
         delta = new double[clientNum][clientNum];
-        initAllowClient2One(allowedClient);
-        currentCicycle = 0;
-        currentCapacity = capacity;
+
+        //currentCicycle = 0;
+        //currentCapacity = capacity;
     }
 
     /**
@@ -43,11 +45,13 @@ public class Ant {
      */
     public void init() {
         //将蚂蚁初始化在出发站
-        firstClient = 0;
-        tour.get(0).add(0);
-        currentClient = firstClient;
+        //firstClient = 0;
+        //tour.get(0).add(0);
+        //currentClient = firstClient;
         visitedClient = new int[DataUtil.clientNum];
         visitedClient[0] = 1;
+        solution = new Solution();
+        initAllowClient2One(allowedClient);
     }
 
     /**
@@ -57,7 +61,10 @@ public class Ant {
      */
     public void selectNextClient(double[][] pheromone) {
         //如果当前处在起始点，则下一步不能选择起始点
-        if (currentClient == 0) {
+        /*if (currentClient == 0) {
+
+        }*/
+        if (solution.getCurrentTruck().isEmpty()){
             allowedClient[0] = 0;
         }
         double[] p = new double[clientNum];
@@ -68,14 +75,15 @@ public class Ant {
         //ArrayUtil.printArr(allowedClient);
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                sum += Math.pow(pheromone[currentClient][i], ALPHA) * Math.pow(1.0 / distance[currentClient][i], BETA);
+                /*sum += Math.pow(pheromone[currentClient][i], ALPHA) * Math.pow(1.0 / distance[currentClient][i], BETA);*/
+                sum += Math.pow(pheromone[solution.getCurrentTruck().getCurrentCus()][i], ALPHA) * Math.pow(1.0 / distance[solution.getCurrentTruck().getCurrentCus()][i], BETA);
             }
         }
         //System.out.println("sum total --"+sum);
         //计算概率矩阵
         for (int i = 0; i < clientNum; i++) {
             if (allowedClient[i] == 1) {
-                p[i] = Math.pow(pheromone[currentClient][i], ALPHA) * Math.pow(1.0 / distance[currentClient][i], BETA) / sum;
+                p[i] = Math.pow(pheromone[solution.getCurrentTruck().getCurrentCus()][i], ALPHA) * Math.pow(1.0 / distance[solution.getCurrentTruck().getCurrentCus()][i], BETA) / sum;
             } else {
                 p[i] = 0.0;
             }
@@ -104,24 +112,32 @@ public class Ant {
         visitedClient[selectClient] = 1;
         allowedClient[selectClient] = 0;
         //将当前城市加入tour中
-        if (currentCicycle >= tour.size()) {
+        solution.addCus(selectClient);
+        /*if (currentCicycle >= tour.size()) {
             List<Integer> cicycle = new ArrayList<Integer>();
             cicycle.add(0);
             cicycle.add(selectClient);
             tour.add(cicycle);
         } else {
             tour.get(currentCicycle).add(selectClient);
-        }
-        currentCapacity -= clientDemandArr[selectClient];
+        }*/
+        //currentCapacity -= clientDemandArr[selectClient];
+
         //根据载重量约束，计算下一步允许访问的城市
-        for (int i = 0; i < allowedClient.length; i++) {
+        /*for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1 && currentCapacity < clientDemandArr[i]) {
+                allowedClient[i] = 0;
+            }
+        }*/
+        for (int i = 0; i < allowedClient.length; i++) {
+            if (allowedClient[i] == 1 && solution.getCurrentTruck().checkNowCus(i)) {
                 allowedClient[i] = 0;
             }
         }
         //如果当前已经走完一个循环
         if (selectClient == 0) {
-            ++currentCicycle;
+            /*++currentCicycle;*/
+            solution.increaseLoop();
             /*List<Integer> cicycle = new ArrayList<Integer>();
             cicycle.add(0);
             tour.add(cicycle);*/
@@ -134,7 +150,7 @@ public class Ant {
             }
         }
         //将当前城市改为选择的城市
-        currentClient = selectClient;
+        /*currentClient = selectClient;*/
         if (currentClient != 0) {
             allowedClient[0] = 1;
         }
