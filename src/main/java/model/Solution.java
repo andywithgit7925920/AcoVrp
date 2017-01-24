@@ -3,6 +3,8 @@ package model;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+import static util.DataUtil.distance;
+
 /**
  * Created by ab792 on 2017/1/18.
  * 代表一个完整的解
@@ -22,6 +24,7 @@ public class Solution implements Serializable {
         currentCicycle = 0;
         Truck firstTruck = new Truck(currentCicycle);
         truckSols.add(firstTruck);
+        currentTruck = firstTruck;
     }
 
     /**
@@ -43,12 +46,23 @@ public class Solution implements Serializable {
      * @param currentCus
      */
     public void addCus(int currentCus) {
-        if (currentCicycle >= truckSols.size()) {
-            Truck truck = new Truck(currentCicycle);
-            truckSols.add(truck);
-        }else {
-            truckSols.get(currentCicycle).addCus(currentCus);
+        if (currentCus!=0){
+            if (currentCicycle >= truckSols.size()) {
+                Truck truck = new Truck(currentCicycle);
+                addTruck(truck);
+            }else {
+                truckSols.get(currentCicycle).addCus(currentCus);
+            }
         }
+    }
+
+    /**
+     * 向当前解中添加车辆
+     * @param truck
+     */
+    public void addTruck(Truck truck){
+        truckSols.add(truck);
+        currentTruck = truck;
     }
 
     /**
@@ -56,6 +70,29 @@ public class Solution implements Serializable {
      */
     public void increaseLoop(){
         ++currentCicycle;
+    }
+
+    /**
+     * 计算一个解的路径长度
+     *
+     * @return
+     */
+    public double calCost() {
+        double len = 0;
+        if (truckSols.size()>0){
+            for (Truck truck : truckSols){
+                len+=truck.calCost();
+            }
+        }
+        return len;
+    }
+
+    /**
+     * 返回解中路径数量
+     * @return
+     */
+    public int siz(){
+        return truckSols.size();
     }
     /**
      * 是否超载
@@ -109,6 +146,7 @@ public class Solution implements Serializable {
     }
 
     public Truck getFirstTruck() {
+        firstTruck = truckSols.getFirst();
         return firstTruck;
     }
 
@@ -121,6 +159,7 @@ public class Solution implements Serializable {
     }
 
     public Truck getLastTruck() {
+        lastTruck = truckSols.getLast();
         return lastTruck;
     }
 
@@ -137,6 +176,11 @@ public class Solution implements Serializable {
     }
 
     public Truck getCurrentTruck() {
+        /*******************/
+        if (currentCicycle >= truckSols.size()) {
+            Truck truck = new Truck(currentCicycle);
+            addTruck(truck);
+        }
         return currentTruck;
     }
 
@@ -146,9 +190,6 @@ public class Solution implements Serializable {
     public String toString() {
         return "Solution{" +
                 "truckSols=" + truckSols +
-                ", cost=" + cost +
-                ", realCost=" + realCost +
-                ", truckNum=" + truckNum +
                 ", overLoadCount=" + overLoadCount +
                 '}';
     }

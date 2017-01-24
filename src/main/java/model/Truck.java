@@ -5,6 +5,7 @@ import util.DataUtil;
 import java.util.LinkedList;
 
 import static util.DataUtil.clientDemandArr;
+import static util.DataUtil.distance;
 
 /**
  * Created by ab792 on 2017/1/18.
@@ -32,6 +33,7 @@ public class Truck {
     public Truck(int id) {
         this.id = id;
         nowCapacity = 0;
+        currentCus = 0;
     }
 
     /**
@@ -55,12 +57,13 @@ public class Truck {
     /**
      * 在当前路径中添加客户
      *
-     * @param currentCus
+     * @param cus
      */
-    public void addCus(int currentCus) {
-        customers.add(currentCus);
+    public void addCus(int cus) {
+        customers.add(cus);
+        currentCus = cus;   //更新当前城市
         //更新当前载重量
-        adddNowCapacity(clientDemandArr[currentCus]);
+        adddNowCapacity(clientDemandArr[cus]);
     }
 
     /**
@@ -88,8 +91,24 @@ public class Truck {
      *
      * @return
      */
-    private double calCost() {
-        return 0.0;
+    public double calCost() {
+        double len = 0.0;
+        if (customers.size()>0){
+            len+=distance[0][customers.getFirst().intValue()];
+            for (int i=0;i+1<customers.size();i++){
+                len += distance[customers.get(i).intValue()][customers.get(i + 1).intValue()];
+            }
+            len+=distance[customers.getLast().intValue()][0];
+        }
+        return len;
+    }
+
+    /**
+     * 返回路径中客户的数量
+     * @return
+     */
+    public int size(){
+        return customers.size();
     }
 
     @Override
@@ -132,11 +151,12 @@ public class Truck {
         this.currentCus = currentCus;
     }
 
-    public LinkedList getCustomers() {
+    public LinkedList<Integer> getCustomers() {
         return customers;
     }
 
     public int getCusNum() {
+        cusNum = customers.size();
         return cusNum;
     }
 

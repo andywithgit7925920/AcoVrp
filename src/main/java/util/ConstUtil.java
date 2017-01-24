@@ -9,7 +9,7 @@ public class ConstUtil {
     public static final Double ALPHA = 0.5;    //
     public static final Double BETA = 0.5;     //
     public static final Double RHO = 0.5;   //信息素挥发率
-    public static final Integer ANT_NUM = 50;    //蚂蚁数量
+    public static final Integer ANT_NUM = 5;    //蚂蚁数量
     public static final Integer ITER_NUM = 10000;
     /****蚁群算法相关****/
     /****禁忌搜索相关相关****/
