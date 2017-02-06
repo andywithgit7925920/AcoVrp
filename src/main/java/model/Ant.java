@@ -2,6 +2,7 @@ package model;
 
 import util.ArrayUtil;
 import util.DataUtil;
+import util.MatrixUtil;
 
 import static util.ConstUtil.*;
 
@@ -30,7 +31,8 @@ public class Ant {
      */
     public void init() {
         //将蚂蚁初始化在出发站
-        visitedClient = new int[DataUtil.clientNum];
+        visitedClient = new int[clientNum];
+        //默认开始从起始点出发
         visitedClient[0] = 1;
         initAllowClient2One(allowedClient);
     }
@@ -40,8 +42,7 @@ public class Ant {
      *
      * @param pheromone
      */
-    public void selectNextClient(double[][] pheromone) {
-        System.out.println("Ant.selectNextClient---begin");
+    public void selectNextClient(double[][] pheromone,int id) {
         //如果当前处在起始点，则下一步不能选择起始点
         if (solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 0;
@@ -49,14 +50,11 @@ public class Ant {
         double[] p = new double[clientNum];
         double sum = 0.0;
         //计算分母部分
-        //System.out.println("allowedClient------");
-        //ArrayUtil.printArr(allowedClient);
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 sum += Math.pow(pheromone[solution.getCurrentTruck().getCurrentCus()][i], ALPHA) * Math.pow(1.0 / distance[solution.getCurrentTruck().getCurrentCus()][i], BETA);
             }
         }
-        //System.out.println("sum--"+sum);
         //计算概率矩阵
         for (int i = 0; i < clientNum; i++) {
             if (allowedClient[i] == 1) {
@@ -67,7 +65,6 @@ public class Ant {
         }
         //轮盘赌选择下一个城市
         double selectP = Math.random();
-        //System.out.println("selectP---"+selectP);
         int selectClient = 0;
         double sum1 = 0.f;
         for (int i = 0; i < clientNum; i++) {
@@ -82,10 +79,6 @@ public class Ant {
         allowedClient[selectClient] = 0;
         //将当前城市加入tour中
         solution.addCus(selectClient);
-        //System.out.println("allowedClient------");
-        //ArrayUtil.printArr(allowedClient);
-        //System.out.println("current truck");
-        //System.out.println(solution.getCurrentTruck());
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1 && !solution.getCurrentTruck().checkNowCus(i)) {
                 allowedClient[i] = 0;
@@ -103,7 +96,7 @@ public class Ant {
                 }
             }
         }
-        //将当前户口改为选择的客户
+        //将当前客户改为选择的客户
         if (solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 1;
         }
@@ -120,7 +113,6 @@ public class Ant {
                 }
             }
         }
-        System.out.println("Ant.selectNextClient---end");
     }
 
 
