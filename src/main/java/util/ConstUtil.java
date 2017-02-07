@@ -6,9 +6,9 @@ package util;
 public class ConstUtil {
     public static final String filePath = "benchmark\\A-VRP\\A-n80-k10.vrp";
     /****蚁群算法相关****/
-    public static final Double ALPHA = 0.5;    //
-    public static final Double BETA = 0.5;     //
-    public static final Double RHO = 0.5;   //信息素挥发率
+    public static final Double ALPHA = 1.0;    //
+    public static final Double BETA = 3.0;     //
+    public static final Double RHO = 0.85;   //信息素挥发率
     public static final Integer ANT_NUM = 50;    //蚂蚁数量
     public static final Integer ITER_NUM = 500;
     /****蚁群算法相关****/
