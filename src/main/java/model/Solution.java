@@ -49,6 +49,7 @@ public class Solution implements Serializable {
         if (currentCus!=0){
             if (currentCicycle >= truckSols.size()) {
                 Truck truck = new Truck(currentCicycle);
+                truck.addCus(currentCus);
                 addTruck(truck);
             }else {
                 truckSols.get(currentCicycle).addCus(currentCus);
@@ -91,7 +92,7 @@ public class Solution implements Serializable {
      * 返回解中路径数量
      * @return
      */
-    public int siz(){
+    public int size(){
         return truckSols.size();
     }
     /**

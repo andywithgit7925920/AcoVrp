@@ -79,16 +79,17 @@ public class ACO {
             System.out.println("ITER_NUM:" + i);
             //对于每一只蚂蚁
             for (int j = 0; j < antNum; j++) {
-                System.out.println("第" + j + "只蚂蚁开始");
+                //System.out.println("第" + j + "只蚂蚁开始");
                 while (!ants[j].visitFinish()) {
-                    ants[j].selectNextClient(pheromone, i);
+                    ants[j].selectNextClient(pheromone);
                 }
-                System.out.println("第" + j + "只蚂蚁总路径" + ants[j].getLength());
+                //System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
+                //System.out.println("第" + j + "只蚂蚁路径"+ants[j].getSolution());
                 if (ants[j].getLength() < bestLen) {
                     bestLen = ants[j].getLength();
                     bestSolution = ants[j].getSolution();
                 }
-                for (int k1 = 0, len1 = ants[j].getSolution().siz(); k1 < len1; k1++) {
+                for (int k1 = 0; k1 < ants[j].getSolution().size(); k1++) {
                     ants[j].getDelta()[0][ants[j].getSolution().getTruckSols().get(k1).getCustomers().get(0).intValue()] = (1. / ants[j].getLength());
                     for (int k2 = 0, len2 = ants[j].getSolution().getTruckSols().get(k1).size(); k2 + 1 < len2; k2++) {
                         ants[j].getDelta()[ants[j].getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()][ants[j].getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()] = (1. / ants[j].getLength());

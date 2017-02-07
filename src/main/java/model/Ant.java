@@ -42,7 +42,7 @@ public class Ant {
      *
      * @param pheromone
      */
-    public void selectNextClient(double[][] pheromone,int id) {
+    public void selectNextClient(double[][] pheromone) {
         //如果当前处在起始点，则下一步不能选择起始点
         if (solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 0;
@@ -84,8 +84,8 @@ public class Ant {
                 allowedClient[i] = 0;
             }
         }
-        //如果当前已经走完一个循环
-        if (selectClient == 0) {
+        //如果当前已经走完一个循环,如果allowedClient只包含0点，则进入下一循环
+        if (selectClient == 0||(OnlyContainsDeposit(allowedClient)&&!visitFinish())) {
             //System.out.println("走完一个循环");
             solution.increaseLoop();
             initAllowClient2Zero(allowedClient);
@@ -96,22 +96,9 @@ public class Ant {
                 }
             }
         }
-        //将当前客户改为选择的客户
-        if (solution.getCurrentTruck().isEmpty()) {
+        //如果当前路径不在出发点，那么可以回到出发点
+        if (!solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 1;
-        }
-        //如果allowedClient只包含0点，则进入下一循环
-        if (OnlyContainsDeposit(allowedClient)) {
-            //System.out.println("allowedClient只包含0点，则进入下一循环");
-            //将起始站加入tour中，该循环结束
-            solution.increaseLoop();
-            //重新计算允许访问的城市
-            initAllowClient2Zero(allowedClient);
-            for (int i = 1; i < visitedClient.length; i++) {
-                if (visitedClient[i] == 0) {
-                    allowedClient[i] = 1;
-                }
-            }
         }
     }
 

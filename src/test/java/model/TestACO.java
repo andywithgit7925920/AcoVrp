@@ -14,7 +14,7 @@ public class TestACO {
     @Test
     public void test() throws IOException {
         ACO aco = new ACO();
-        aco.init("benchmark/A-VRP/A-n32-k5.vrp");
+        aco.init("benchmark\\A-VRP\\A-n80-k10.vrp");
         aco.run();
 
     }

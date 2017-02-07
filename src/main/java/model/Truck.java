@@ -94,7 +94,7 @@ public class Truck {
     public double calCost() {
         double len = 0.0;
         if (customers.size()>0){
-            len+=distance[0][customers.getFirst().intValue()];
+            len+=distance[0][customers.getFirst()];
             for (int i=0;i+1<customers.size();i++){
                 len += distance[customers.get(i).intValue()][customers.get(i + 1).intValue()];
             }
