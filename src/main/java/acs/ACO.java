@@ -45,7 +45,7 @@ public class ACO {
                 pheromone = new double[clientNum][clientNum];
                 for (int i = 0; i < clientNum; i++) {
                     for (int j = 0; j < clientNum; j++) {
-                        pheromone[i][j] = 0.1;
+                        pheromone[i][j] = ConstUtil.PHEROMONE_INIT;
                     }
                 }
                 bestLen = Double.MAX_VALUE;
@@ -77,34 +77,34 @@ public class ACO {
     public void run() {
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
-            System.out.println("ITER_NUM:" + i);
+            //System.out.println("ITER_NUM:" + i);
             //bestSolution = null;
             //bestAnt = null;
             //对于每一只蚂蚁
             for (int j = 0; j < antNum; j++) {
                 //System.out.println("第" + j + "只蚂蚁开始");
-                logger.info("第" + j + "只蚂蚁开始");
+                //logger.info("第" + j + "只蚂蚁开始");
                 while (!ants[j].visitFinish()) {
                     ants[j].selectNextClient(pheromone);
                 }
-                System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
-                System.out.println("第" + j + "只蚂蚁路径" + ants[j].getSolution());
+                //System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
+                //System.out.println("第" + j + "只蚂蚁路径" + ants[j].getSolution());
                 //改变信息素更新策略
                 if (bestSolution == null && bestAnt == null) {
-                    logger.info("=============case1=============");
+                    //logger.info("=============case1=============");
                     bestAnt = ants[j];
                     bestLen = bestAnt.getLength();
                     bestSolution = bestAnt.getSolution();
                 }
                 //1.若𝑅的用车数大于𝑅∗的 用车数, 则将𝑅中所有边上的信息素进行大量蒸发
                 else if (ants[j].getSolution().getTruckNum() > bestSolution.getTruckNum()) {
-                    logger.info("=============case2=============");
+                    //logger.info("=============case2=============");
                     setBaseUpdateStrategy(new UpdateStrategy4Case1());
                     baseUpdateStrategy.update(pheromone, ants[j].getSolution());
                 }
                 //2.若𝑅的用车数等 于𝑅∗的用车数, 但𝑅的距离/时间费用大于等于𝑅∗相 应的费用, 则将𝑅中所有边上的信息素进行少量蒸发
                 else if (ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && ants[j].getLength() >= bestLen) {
-                    logger.info("=============case3=============");
+                    //logger.info("=============case3=============");
                     setBaseUpdateStrategy(new UpdateStrategy4Case2());
                     baseUpdateStrategy.update(pheromone, ants[j].getSolution());
                 }
@@ -120,8 +120,8 @@ public class ACO {
                 stretegy.updateSolution(bestSolution);
                 bestLen = bestSolution.getCost();
                 ants[j].setSolution(bestSolution);
-                System.out.println("第" + j + "只蚂蚁优化后总路径长度" + ants[j].getLength());
-                System.out.println("第" + j + "只蚂蚁优化后路径" + ants[j].getSolution());
+                //System.out.println("第" + j + "只蚂蚁优化后总路径长度" + ants[j].getLength());
+                //System.out.println("第" + j + "只蚂蚁优化后路径" + ants[j].getSolution());
                 /**********优化解 end**********/
                 //更新蚂蚁自身的信息素
                 for (int k1 = 0; k1 < ants[j].getSolution().size(); k1++) {

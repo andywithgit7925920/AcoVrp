@@ -18,7 +18,7 @@ public class _2OptStretegy implements BaseStretegy {
      * @return
      */
     public void updateSolution(Solution preSolution) {
-        System.out.println("_2OptStretegy.updateSolution begin");
+        //System.out.println("_2OptStretegy.updateSolution begin");
         if (preSolution == null || preSolution.getTruckSols() == null)
             return ;
         LinkedList<Truck> truckSols = preSolution.getTruckSols();
@@ -40,7 +40,7 @@ public class _2OptStretegy implements BaseStretegy {
                 }
             }
         }
-        System.out.println("_2OptStretegy.updateSolution end");
+        //System.out.println("_2OptStretegy.updateSolution end");
     }
 
     /**

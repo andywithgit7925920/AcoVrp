@@ -44,11 +44,11 @@ public class Ant {
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-        logger.info("ant .. selectNextClient...begin");
-        logger.info("allowedClient---" );
-        ArrayUtil.printArr(allowedClient);
-        logger.info("visitedClient---" );
-        ArrayUtil.printArr(visitedClient);
+        //logger.info("ant .. selectNextClient...begin");
+        //logger.info("allowedClient---" );
+        //ArrayUtil.printArr(allowedClient);
+        //logger.info("visitedClient---" );
+        //ArrayUtil.printArr(visitedClient);
         //如果当前处在起始点，则下一步不能选择起始点
         /*if (solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 0;
@@ -56,14 +56,14 @@ public class Ant {
         double[] p = new double[clientNum];
         double sum = 0.0;
         int currentCus = solution.getCurrentTruck().getCurrentCus();
-        logger.info("currentCus-->"+currentCus);
+        //logger.info("currentCus-->"+currentCus);
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
             }
         }
-        logger.info("sum---"+sum);
+        //logger.info("sum---"+sum);
         /*if (sum ==0){
             for (int i = 0; i < allowedClient.length; i++) {
                 if (allowedClient[i] == 1) {
@@ -85,7 +85,7 @@ public class Ant {
         }
         //轮盘赌选择下一个城市
         double selectP = Math.random();
-        logger.info("selectP-->"+selectP);
+        //logger.info("selectP-->"+selectP);
         int selectClient = 0;
         double sum1 = 0.f;
         for (int i = 0; i < clientNum; i++) {
@@ -99,7 +99,7 @@ public class Ant {
         visitedClient[selectClient] = 1;
         allowedClient[selectClient] = 0;
 
-        logger.info("selectCliend---"+selectClient);
+        //logger.info("selectCliend---"+selectClient);
         //将当前城市加入solution中
         solution.addCus(selectClient);
         for (int i = 0; i < allowedClient.length; i++) {
@@ -109,7 +109,7 @@ public class Ant {
         }
         //如果当前已经走完一个循环,如果allowedClient只包含0点，则进入下一循环
         if ((OnlyContainsDeposit(allowedClient)&&!visitFinish())) {
-            System.out.println("走完一个循环");
+            //System.out.println("走完一个循环");
             solution.increaseLoop();
             initAllowClient2Zero(allowedClient);
             //重新计算允许访问的客户
@@ -123,7 +123,7 @@ public class Ant {
         /*if (!solution.getCurrentTruck().isEmpty()) {
             allowedClient[0] = 1;
         }*/
-        logger.info("ant .. selectNextClient...end");
+        //logger.info("ant .. selectNextClient...end");
     }
 
 
