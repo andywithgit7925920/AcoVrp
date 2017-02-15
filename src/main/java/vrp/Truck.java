@@ -1,4 +1,4 @@
-package model;
+package vrp;
 
 import util.DataUtil;
 
@@ -72,8 +72,8 @@ public class Truck {
      * @param demand
      * @return
      */
-    public double adddNowCapacity(double demand) {
-        return nowCapacity += demand;
+    public void adddNowCapacity(double demand) {
+        nowCapacity += demand;
     }
 
     /**
@@ -83,7 +83,7 @@ public class Truck {
      * @return
      */
     public boolean checkNowCus(int nowCus) {
-        return capacity > nowCapacity + clientDemandArr[nowCus];
+        return capacity >= nowCapacity + clientDemandArr[nowCus];
     }
 
     /**
@@ -236,6 +236,12 @@ public class Truck {
 
     public void setLastCus(int lastCus) {
         this.lastCus = lastCus;
+    }
+
+    public void refresh() {
+        for (Integer cus : customers){
+            adddNowCapacity(clientDemandArr[cus]);
+        }
     }
     /*********getters and setters**********/
 }

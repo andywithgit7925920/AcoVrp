@@ -1,4 +1,4 @@
-package model;
+package vrp;
 
 import java.io.Serializable;
 

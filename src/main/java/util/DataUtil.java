@@ -1,8 +1,9 @@
 package util;
 
-import model.Truck;
+import vrp.Truck;
 
 import java.io.*;
+import java.util.LinkedList;
 
 /**
  * Created by ab792 on 2016/12/30.
@@ -107,5 +108,6 @@ public class DataUtil {
     public static boolean eq(double a, double b) {
         return Math.abs(a - b) < 1e-6;
     }
+
 
 }

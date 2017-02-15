@@ -1,9 +1,7 @@
-package model;
+package vrp;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-
-import static util.DataUtil.distance;
 
 /**
  * Created by ab792 on 2017/1/18.
@@ -21,7 +19,7 @@ public class Solution implements Serializable {
     private int currentCicycle;     //当前在第几个循环（即第几辆车）
 
     public Solution() {
-        currentCicycle = 0;
+        currentCicycle = 1;
         Truck firstTruck = new Truck(currentCicycle);
         truckSols.add(firstTruck);
         currentTruck = firstTruck;
@@ -47,12 +45,12 @@ public class Solution implements Serializable {
      */
     public void addCus(int currentCus) {
         if (currentCus!=0){
-            if (currentCicycle >= truckSols.size()) {
+            if (currentCicycle > truckSols.size()) {
                 Truck truck = new Truck(currentCicycle);
                 truck.addCus(currentCus);
                 addTruck(truck);
             }else {
-                truckSols.get(currentCicycle).addCus(currentCus);
+                truckSols.get(currentCicycle-1).addCus(currentCus);
             }
         }
     }
@@ -111,6 +109,7 @@ public class Solution implements Serializable {
     }
 
     public double getCost() {
+        cost = calCost();
         return cost;
     }
 
@@ -119,6 +118,7 @@ public class Solution implements Serializable {
     }
 
     public int getTruckNum() {
+        truckNum = truckSols.size();
         return truckNum;
     }
 
@@ -178,8 +178,9 @@ public class Solution implements Serializable {
 
     public Truck getCurrentTruck() {
         /*******************/
-        if (currentCicycle >= truckSols.size()) {
+        if (currentCicycle > truckSols.size()) {
             Truck truck = new Truck(currentCicycle);
+            currentTruck = truck;
             addTruck(truck);
         }
         return currentTruck;

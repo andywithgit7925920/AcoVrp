@@ -1,7 +1,6 @@
-package model;
+package acs;
 
 import org.junit.Test;
-import util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.List;

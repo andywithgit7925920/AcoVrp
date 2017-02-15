@@ -9,8 +9,10 @@ public class ConstUtil {
     public static final Double ALPHA = 1.0;    //
     public static final Double BETA = 3.0;     //
     public static final Double RHO = 0.85;   //信息素挥发率
-    public static final Integer ANT_NUM = 50;    //蚂蚁数量
-    public static final Integer ITER_NUM = 500;
+    public static final Integer ANT_NUM = 10;    //蚂蚁数量
+    public static final Integer ITER_NUM = 300;     //迭代数
+    public static final Double PHEROMONE_MAX = 100.0;       //信息素最大值
+    public static final Double PHEROMONE_MIN = 1.0E-200;    //信息素最小值
     /****蚁群算法相关****/
     /****禁忌搜索相关相关****/
     double capPenalty = 100.0;     //重量超出惩罚
