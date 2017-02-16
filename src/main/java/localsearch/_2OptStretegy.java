@@ -3,8 +3,6 @@ package localsearch;
 import vrp.Solution;
 import vrp.Truck;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -34,7 +32,7 @@ public class _2OptStretegy implements BaseStretegy {
                     newCost = newTruck.calCost();
                     if (newCost < bestCost){
                         truckSols.remove(i);
-                        newTruck.refresh();
+                        newTruck.refreshNowCap();
                         truckSols.add(i,newTruck);
                     }
                 }

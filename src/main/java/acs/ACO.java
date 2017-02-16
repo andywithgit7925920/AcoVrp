@@ -1,6 +1,7 @@
 package acs;
 
 import localsearch.BaseStretegy;
+import localsearch._2Opt$Stretegy;
 import localsearch._2OptStretegy;
 import updatestrategy.BaseUpdateStrategy;
 import updatestrategy.UpdateStrategy4Case1;
@@ -9,6 +10,7 @@ import util.ConstUtil;
 import static util.LogUtil.logger;
 import static util.DataUtil.*;
 
+import util.DataUtil;
 import util.StringUtil;
 import vrp.Solution;
 
@@ -27,6 +29,7 @@ public class ACO {
     private Ant bestAnt;    //最佳路径的蚂蚁
     private BaseUpdateStrategy baseUpdateStrategy;  //信息素更新策略
     private BaseStretegy stretegy;  //局部搜索策略
+
 
     public ACO() {
         this.antNum = ConstUtil.ANT_NUM;
@@ -74,7 +77,7 @@ public class ACO {
     /**
      * ACO的运行过程
      */
-    public void run() {
+    public void run() throws Exception {
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
             //System.out.println("ITER_NUM:" + i);
@@ -91,38 +94,40 @@ public class ACO {
                 //System.out.println("第" + j + "只蚂蚁路径" + ants[j].getSolution());
                 //改变信息素更新策略
                 if (bestSolution == null && bestAnt == null) {
-                    //logger.info("=============case1=============");
+                    //logger.info("=========case1==========");
                     bestAnt = ants[j];
                     bestLen = bestAnt.getLength();
                     bestSolution = bestAnt.getSolution();
                 }
                 //1.若𝑅的用车数大于𝑅∗的 用车数, 则将𝑅中所有边上的信息素进行大量蒸发
                 else if (ants[j].getSolution().getTruckNum() > bestSolution.getTruckNum()) {
-                    //logger.info("=============case2=============");
+                    //logger.info("=========case2==========");
                     setBaseUpdateStrategy(new UpdateStrategy4Case1());
                     baseUpdateStrategy.update(pheromone, ants[j].getSolution());
                 }
                 //2.若𝑅的用车数等 于𝑅∗的用车数, 但𝑅的距离/时间费用大于等于𝑅∗相 应的费用, 则将𝑅中所有边上的信息素进行少量蒸发
                 else if (ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && ants[j].getLength() >= bestLen) {
-                    //logger.info("=============case3=============");
+                    //logger.info("=========case3==========");
                     setBaseUpdateStrategy(new UpdateStrategy4Case2());
                     baseUpdateStrategy.update(pheromone, ants[j].getSolution());
                 }
+
+                /**********优化解 begin**********/
+                //logger.info("=========优化解 begin==========");
+                setStretegy(new _2Opt$Stretegy());
+                stretegy.updateSolution(ants[j].getSolution());
+                //System.out.println("2opt*优化后--->"+ants[j].getLength());
+                setStretegy(new _2OptStretegy());
+                stretegy.updateSolution(ants[j].getSolution());
+                //System.out.println("2opt优化后--->"+ants[j].getLength());
+                //logger.info("=========优化解 end==========");
+                /**********优化解 end**********/
                 //3.若𝑅的用车 数等于𝑅∗的用车数, 且𝑅的距离/时间费用小于𝑅∗相 应的费用, 或𝑅的用车数小于𝑅∗的用车数时
-                else if ((ants[j].getSolution().getTruckNum () == bestSolution.getTruckNum() && ants[j].getLength() < bestLen) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
-                    //logger.info("=============case4=============");
+                if ((ants[j].getSolution().getTruckNum () == bestSolution.getTruckNum() && ants[j].getLength() < bestLen) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
                     bestAnt = ants[j];
                     bestLen = bestAnt.getLength();
                     bestSolution = bestAnt.getSolution();
                 }
-                /**********优化解 begin**********/
-                stretegy = new _2OptStretegy();
-                stretegy.updateSolution(bestSolution);
-                bestLen = bestSolution.getCost();
-                ants[j].setSolution(bestSolution);
-                //System.out.println("第" + j + "只蚂蚁优化后总路径长度" + ants[j].getLength());
-                //System.out.println("第" + j + "只蚂蚁优化后路径" + ants[j].getSolution());
-                /**********优化解 end**********/
                 //更新蚂蚁自身的信息素
                 for (int k1 = 0; k1 < ants[j].getSolution().size(); k1++) {
                     ants[j].getDelta()[0][ants[j].getSolution().getTruckSols().get(k1).getCustomers().get(0).intValue()] = (1. / ants[j].getLength());
@@ -188,5 +193,8 @@ public class ACO {
 
     public void setBaseUpdateStrategy(BaseUpdateStrategy baseUpdateStrategy) {
         this.baseUpdateStrategy = baseUpdateStrategy;
+    }
+    public void setStretegy(BaseStretegy stretegy) {
+        this.stretegy = stretegy;
     }
 }

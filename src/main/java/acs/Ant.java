@@ -44,15 +44,12 @@ public class Ant {
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-        //logger.info("ant .. selectNextClient...begin");
-        //logger.info("allowedClient---" );
-        //ArrayUtil.printArr(allowedClient);
-        //logger.info("visitedClient---" );
-        //ArrayUtil.printArr(visitedClient);
+        /*logger.info("ant .. selectNextClient...begin");
+        logger.info("allowedClient---" );
+        ArrayUtil.printArr(allowedClient);
+        logger.info("visitedClient---" );
+        ArrayUtil.printArr(visitedClient);*/
         //如果当前处在起始点，则下一步不能选择起始点
-        /*if (solution.getCurrentTruck().isEmpty()) {
-            allowedClient[0] = 0;
-        }*/
         double[] p = new double[clientNum];
         double sum = 0.0;
         int currentCus = solution.getCurrentTruck().getCurrentCus();
@@ -61,16 +58,22 @@ public class Ant {
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
+                //System.out.println("sum--->"+sum);
+                //System.out.println("Math.pow(pheromone[currentCus][i], ALPHA)--->"+Math.pow(pheromone[currentCus][i], ALPHA));
+                /*System.out.println("currentCus-->"+currentCus);
+                System.out.println("i--->"+i);
+                System.out.println("Math.pow(1.0 / distance[currentCus][i], BETA)--->"+Math.pow(1.0 / distance[currentCus][i], BETA));
+                System.out.println("distance[currentCus][i]--->"+distance[currentCus][i]);*/
             }
         }
-        //logger.info("sum---"+sum);
+        //logger.info("total sum---"+sum);
         /*if (sum ==0){
             for (int i = 0; i < allowedClient.length; i++) {
                 if (allowedClient[i] == 1) {
-                    System.out.println("i--->"+i);
+                    *//*System.out.println("i--->"+i);
                     System.out.println("pheromone[currentCus][i]--->"+pheromone[currentCus][i]);
                     System.out.println("1.0 / distance[currentCus][i]--->"+1.0 / distance[currentCus][i]);
-                    sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
+                    sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);*//*
                 }
             }
             System.exit(-1);

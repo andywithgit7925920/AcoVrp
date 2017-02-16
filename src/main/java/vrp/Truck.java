@@ -42,6 +42,7 @@ public class Truck {
      * @return
      */
     public boolean isOverLoad() {
+        refreshNowCap();
         return DataUtil.more(nowCapacity, capacity);
     }
 
@@ -83,6 +84,7 @@ public class Truck {
      * @return
      */
     public boolean checkNowCus(int nowCus) {
+        refreshNowCap();
         return capacity >= nowCapacity + clientDemandArr[nowCus];
     }
 
@@ -93,26 +95,28 @@ public class Truck {
      */
     public double calCost() {
         double len = 0.0;
-        if (customers.size()>0){
-            len+=distance[0][customers.getFirst()];
-            for (int i=0;i+1<customers.size();i++){
+        if (customers.size() > 0) {
+            len += distance[0][customers.getFirst()];
+            for (int i = 0; i + 1 < customers.size(); i++) {
                 len += distance[customers.get(i).intValue()][customers.get(i + 1).intValue()];
             }
-            len+=distance[customers.getLast().intValue()][0];
+            len += distance[customers.getLast().intValue()][0];
         }
         return len;
     }
 
     /**
      * 返回路径中客户的数量
+     *
      * @return
      */
-    public int size(){
+    public int size() {
         return customers.size();
     }
 
     @Override
     public String toString() {
+        refreshNowCap();
         return "Truck{" +
                 "id=" + id +
                 ", capacity=" + capacity +
@@ -238,8 +242,9 @@ public class Truck {
         this.lastCus = lastCus;
     }
 
-    public void refresh() {
-        for (Integer cus : customers){
+    public void refreshNowCap() {
+        nowCapacity = 0.0;
+        for (Integer cus : customers) {
             adddNowCapacity(clientDemandArr[cus]);
         }
     }

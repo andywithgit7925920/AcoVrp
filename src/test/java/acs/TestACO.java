@@ -1,6 +1,7 @@
 package acs;
 
 import org.junit.Test;
+import util.ConstUtil;
 
 import java.io.IOException;
 import java.util.Random;
@@ -10,11 +11,12 @@ import java.util.Random;
  */
 public class TestACO {
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
         org.apache.log4j.LogManager.resetConfiguration();
         org.apache.log4j.PropertyConfigurator.configure("C:\\Users\\ab792\\IdeaProjects\\AcoVrp\\src\\log4j.properties");
         ACO aco = new ACO();
-        aco.init("benchmark\\A-VRP\\A-n32-k5.vrp");
+        String filePath = ConstUtil.filePath;
+        aco.init(filePath);
         aco.run();
 
     }
