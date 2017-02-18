@@ -1,6 +1,7 @@
 package util;
 
 import org.junit.Test;
+import vrp.VRP;
 
 import java.io.IOException;
 
@@ -12,7 +13,7 @@ public class TestCommonDatas {
 
     @Test
     public void test() throws IOException {
-        DataUtil.importDataFromAVRP(ConstUtil.filePath);
+        VRP.importDataFromAVRP(ConstUtil.filePath);
 
     }
 

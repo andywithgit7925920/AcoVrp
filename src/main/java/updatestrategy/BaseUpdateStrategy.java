@@ -1,20 +1,22 @@
 package updatestrategy;
 
 import acs.Ant;
+import vrp.Parameter;
 import vrp.Solution;
-import util.ConstUtil;
 
-import static util.DataUtil.clientNum;
+import static vrp.VRP.*;
 
 /**
  * Created by ab792 on 2017/2/7.
  */
 public abstract class BaseUpdateStrategy {
-    public double P = ConstUtil.RHO;
+    public double P = Parameter.RHO;
 
     public abstract void update(double[][] pheromone, Solution solution);
 
     public void update(double[][] pheromone, Ant ant) {
+        //System.out.println("ConstUtil.PHEROMONE_MAX--->"+ConstUtil.PHEROMONE_MAX);
+        //System.out.println("ConstUtil.PHEROMONE_MIN--->"+ConstUtil.PHEROMONE_MIN );
         //信息素挥发
         for (int i = 0; i < clientNum; i++) {
             for (int j = 0; j < clientNum; j++) {
@@ -53,8 +55,8 @@ public abstract class BaseUpdateStrategy {
     public void checkPheromoneLimit(double[][] pheromone) {
         for (int i = 0; i < pheromone.length; i++) {
             for (int j = 0; j < pheromone[i].length; j++) {
-                pheromone[i][j] = (pheromone[i][j] < ConstUtil.PHEROMONE_MIN) ? ConstUtil.PHEROMONE_MIN : pheromone[i][j];
-                pheromone[i][j] = (pheromone[i][j] > ConstUtil.PHEROMONE_MAX) ? ConstUtil.PHEROMONE_MAX : pheromone[i][j];
+                pheromone[i][j] = (pheromone[i][j] < Parameter.PHEROMONE_MIN) ? Parameter.PHEROMONE_MIN : pheromone[i][j];
+                pheromone[i][j] = (pheromone[i][j] > Parameter.PHEROMONE_MAX) ? Parameter.PHEROMONE_MAX : pheromone[i][j];
             }
         }
     }

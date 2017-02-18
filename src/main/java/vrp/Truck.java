@@ -3,9 +3,8 @@ package vrp;
 import util.DataUtil;
 
 import java.util.LinkedList;
+import static vrp.VRP.*;
 
-import static util.DataUtil.clientDemandArr;
-import static util.DataUtil.distance;
 
 /**
  * Created by ab792 on 2017/1/18.

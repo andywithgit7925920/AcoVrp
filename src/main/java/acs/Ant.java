@@ -3,9 +3,9 @@ package acs;
 import util.ArrayUtil;
 import vrp.Solution;
 
-import static util.ConstUtil.*;
+import static vrp.Parameter.*;
 import static util.LogUtil.logger;
-import static util.DataUtil.*;
+import static vrp.VRP.*;
 
 import java.util.*;
 

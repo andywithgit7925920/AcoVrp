@@ -1,7 +1,7 @@
 package updatestrategy;
 
+import vrp.Parameter;
 import vrp.Solution;
-import util.ConstUtil;
 
 /**
  * Created by ab792 on 2017/2/7.
@@ -9,7 +9,7 @@ import util.ConstUtil;
  * 则将𝑅中所有边上的信息素进行少量蒸发
  */
 public class UpdateStrategy4Case2 extends BaseUpdateStrategy {
-    public double P = 1 - ConstUtil.RHO;
+    public double P = 1 - Parameter.RHO;
 
     public void update(double[][] pheromone, Solution solution) {
         if (pheromone != null && solution != null) {

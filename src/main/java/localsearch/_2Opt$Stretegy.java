@@ -2,6 +2,8 @@ package localsearch;
 
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.SpinnerValueFactory;
+import static vrp.VRP.*;
+
 import util.DataUtil;
 import vrp.Solution;
 import vrp.Truck;
@@ -133,8 +135,8 @@ public class _2Opt$Stretegy implements BaseStretegy {
         LinkedList<Integer> customers2 = truck2.getCustomers();
         int index11 = customers1.get(indexI), index12 = (indexI + 1) >= customers1.size() ? 0 : customers1.get(indexI + 1);
         int index21 = customers2.get(indexJ), index22 = (indexJ + 1) >= customers2.size() ? 0 : customers2.get(indexJ + 1);
-        double cost1 = DataUtil.distance[index11][index12] + DataUtil.distance[index21][index22];
-        double cost2 = DataUtil.distance[index11][index22] + DataUtil.distance[index21][index12];
+        double cost1 = distance[index11][index12] + distance[index21][index22];
+        double cost2 = distance[index11][index22] + distance[index21][index12];
         return cost1 - cost2;
     }
 

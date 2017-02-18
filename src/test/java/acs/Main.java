@@ -83,4 +83,5 @@ public class Main {
         System.out.println(truck1);
         System.out.println(truck2);
     }
+
 }
