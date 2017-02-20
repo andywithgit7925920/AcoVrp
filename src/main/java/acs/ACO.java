@@ -43,7 +43,8 @@ public class ACO {
         if (StringUtil.isNotEmpty(filePath)) {
             try {
                 //导入数据
-                importDataFromAVRP(filePath);
+                //importDataFromAVRP(filePath);
+                importDataFromSolomon(filePath);
                 //this.capacity = DataUtil.capacity;
                 //初始化信息素矩阵
                 pheromone = new double[clientNum][clientNum];

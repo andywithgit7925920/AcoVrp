@@ -106,6 +106,7 @@ public class Ant {
         //将当前城市加入solution中
         solution.addCus(selectClient);
         for (int i = 0; i < allowedClient.length; i++) {
+            //solution检查各项约束条件是否允许
             if (allowedClient[i] == 1 && !solution.getCurrentTruck().checkNowCus(i)) {
                 allowedClient[i] = 0;
             }

@@ -12,13 +12,14 @@ public class _2OptStretegy implements BaseStretegy {
 
     /**
      * 对每条路径上的解进行局部搜索
+     *
      * @param preSolution
      * @return
      */
     public void updateSolution(Solution preSolution) {
         //System.out.println("_2OptStretegy.updateSolution begin");
         if (preSolution == null || preSolution.getTruckSols() == null)
-            return ;
+            return;
         LinkedList<Truck> truckSols = preSolution.getTruckSols();
         for (int i = 0; i < truckSols.size(); i++) {
             Truck truck = truckSols.get(i);
@@ -29,11 +30,13 @@ public class _2OptStretegy implements BaseStretegy {
             for (int j = 0; j < customers.size() - 1; j++) {
                 for (int k = j + 1; k < customers.size(); k++) {
                     newTruck = _2OptSwap(truck, j, k);
-                    newCost = newTruck.calCost();
-                    if (newCost < bestCost){
-                        truckSols.remove(i);
-                        newTruck.refreshNowCap();
-                        truckSols.add(i,newTruck);
+                    if (newTruck.isGoodTruck()) {
+                        newCost = newTruck.calCost();
+                        if (newCost < bestCost) {
+                            truckSols.remove(i);
+                            newTruck.refreshNowCap();
+                            truckSols.add(i, newTruck);
+                        }
                     }
                 }
             }

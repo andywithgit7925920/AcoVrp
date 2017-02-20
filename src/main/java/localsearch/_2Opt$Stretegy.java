@@ -2,6 +2,7 @@ package localsearch;
 
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.SpinnerValueFactory;
+
 import static vrp.VRP.*;
 
 import util.DataUtil;
@@ -47,6 +48,7 @@ public class _2Opt$Stretegy implements BaseStretegy {
                                 //交换
                                 _2Opt$Swap(nowTruck, compareTruck, k, m);
                                 if (!nowTruck.isOverLoad() && !compareTruck.isOverLoad()) {
+                                    if (!nowTruck.isOverTime() && !compareTruck.isOverTime()) {
                                     /*System.out.println("============================");
                                     System.out.println("交换后的车辆未超载");
                                     System.out.println("==!nowTruck.isOverLoad() && !compareTruck.isOverLoad()==");
@@ -55,12 +57,13 @@ public class _2Opt$Stretegy implements BaseStretegy {
                                     System.out.println("当前车辆nowTruck--->" + nowTruck);
                                     System.out.println("比较车辆compareTruck--->" + compareTruck);
                                     System.out.println("tempCost--->" + tempCost);*/
-                                    nodesMap[0] = k;
-                                    nodesMap[1] = m;
-                                    truckMap[0] = nowTruck;
-                                    truckMap[1] = compareTruck;
-                                    maxSpan = tempCost;
-                                    //System.out.println("============================");
+                                        nodesMap[0] = k;
+                                        nodesMap[1] = m;
+                                        truckMap[0] = nowTruck;
+                                        truckMap[1] = compareTruck;
+                                        maxSpan = tempCost;
+                                        //System.out.println("============================");
+                                    }
                                 }
                                 _2Opt$Swap(nowTruck, compareTruck, k, m);
                             }
@@ -70,7 +73,7 @@ public class _2Opt$Stretegy implements BaseStretegy {
             }
             //当前组交换的最大值
 
-            if (truckMap[0]!=null&&truckMap[1]!=null&&nodesMap[0]!=null&&nodesMap[1]!=null) {
+            if (truckMap[0] != null && truckMap[1] != null && nodesMap[0] != null && nodesMap[1] != null) {
                 /*System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("maxSpan--->"+maxSpan);
                 System.out.println("将选中的点进行最终交换");*/

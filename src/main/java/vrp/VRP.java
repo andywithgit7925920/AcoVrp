@@ -143,6 +143,8 @@ public class VRP {
                 }
             }
         }
+        //为truck的最大服务时间赋值
+        Truck.serviceTime = time[0][1];
         //计算距离矩阵
         distance = new double[clientNum][clientNum];
         for (int i = 0; i < clientNum; i++) {
@@ -153,14 +155,13 @@ public class VRP {
                 distance[j][i] = distance[i][j];
             }
         }
-        //ArrayUtil.printArr(x_Axis);
-        //ArrayUtil.printArr(y_Axis);
+        //开始打印数据
         System.out.println("=========clientDemandArr===========");
         ArrayUtil.printArr(clientDemandArr);
         System.out.println("=========serviceTime===========");
         ArrayUtil.printArr(serviceTime);
         System.out.println("=========time===========");
-        for (int i=0;i<time.length;i++){
+        for (int i= 0;i<time.length;i++){
             for (int j=0;j<time[i].length;j++){
                 System.out.print(time[i][j]+" ");
             }

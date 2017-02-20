@@ -11,7 +11,7 @@ public class Parameter {
     public static final Double BETA = 3.0;     //启发信息影响因子
     public static Double RHO = 0.85;   //信息素挥发率
     public static final Integer ANT_NUM = 500;    //蚂蚁数量
-    public static final Integer ITER_NUM = 20;     //迭代数
+    public static final Integer ITER_NUM = 10;     //迭代数
     public static final Double PHEROMONE_INIT = 1.0;    //信息素的初始值
     public static Double PHEROMONE_MAX = 1.0 ;       //信息素最大值
     public static Double PHEROMONE_MIN =1E-50;    //信息素最小值

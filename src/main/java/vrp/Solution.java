@@ -13,10 +13,12 @@ public class Solution implements Serializable {
     private double realCost;    //扣掉truck penalty后的cost
     private int truckNum;   //卡车数量
     private int overLoadCount;  //超重卡车数
+    private int overTimeCount;  //超出时间卡车数
     private Truck firstTruck;   //第一量车
     private Truck lastTruck;    //最后一辆车
     private Truck currentTruck; //当前车辆
     private int currentCicycle;     //当前在第几个循环（即第几辆车）
+    private boolean isGoodSolution; //是否是一个好的解
 
     public Solution() {
         currentCicycle = 1;
@@ -32,7 +34,7 @@ public class Solution implements Serializable {
      */
     public boolean isGoodSolution() {
         for (Truck truck : truckSols) {
-            if (truck.isOverLoad())
+            if (!truck.isGoodTruck())
                 return false;
         }
         return true;
@@ -44,22 +46,23 @@ public class Solution implements Serializable {
      * @param currentCus
      */
     public void addCus(int currentCus) {
-        if (currentCus!=0){
+        if (currentCus != 0) {
             if (currentCicycle > truckSols.size()) {
                 Truck truck = new Truck(currentCicycle);
                 truck.addCus(currentCus);
                 addTruck(truck);
-            }else {
-                truckSols.get(currentCicycle-1).addCus(currentCus);
+            } else {
+                truckSols.get(currentCicycle - 1).addCus(currentCus);
             }
         }
     }
 
     /**
      * 向当前解中添加车辆
+     *
      * @param truck
      */
-    public void addTruck(Truck truck){
+    public void addTruck(Truck truck) {
         truckSols.add(truck);
         currentTruck = truck;
     }
@@ -67,7 +70,7 @@ public class Solution implements Serializable {
     /**
      * 递增当前循环
      */
-    public void increaseLoop(){
+    public void increaseLoop() {
         ++currentCicycle;
     }
 
@@ -78,9 +81,9 @@ public class Solution implements Serializable {
      */
     public double calCost() {
         double len = 0;
-        if (truckSols.size()>0){
-            for (Truck truck : truckSols){
-                len+=truck.calCost();
+        if (truckSols.size() > 0) {
+            for (Truck truck : truckSols) {
+                len += truck.calCost();
             }
         }
         return len;
@@ -88,11 +91,13 @@ public class Solution implements Serializable {
 
     /**
      * 返回解中路径数量
+     *
      * @return
      */
-    public int size(){
+    public int size() {
         return truckSols.size();
     }
+
     /**
      * 是否超载
      *
@@ -122,8 +127,44 @@ public class Solution implements Serializable {
         return truckNum;
     }
 
+    /**
+     * 获取不满足载重约束的卡车数
+     *
+     * @return
+     */
     public int getOverLoadCount() {
-        return overLoadCount;
+        int count = 0;
+        if (truckSols.size() > 0) {
+            for (Truck truck : truckSols) {
+                if (truck.isOverLoad()) {
+                    System.out.println("overLoadTruck--->"+truck);
+                    ++count;
+                }
+            }
+            overLoadCount = count;
+            return overLoadCount;
+        }
+        return 0;
+    }
+
+    /**
+     * 获取不满足时间窗约束的卡车数
+     *
+     * @return
+     */
+    public int getOverTimeCount() {
+        int count = 0;
+        if (truckSols.size() > 0) {
+            for (Truck truck : truckSols) {
+                if (truck.isOverTime()) {
+                    System.out.println("overTimeTruck--->"+truck);
+                    ++count;
+                }
+            }
+            overTimeCount = count;
+            return overTimeCount;
+        }
+        return 0;
     }
 
     public void setTruckSols(LinkedList<Truck> truckSols) {
@@ -190,9 +231,14 @@ public class Solution implements Serializable {
 
     @Override
     public String toString() {
+        getOverLoadCount();
+        getOverTimeCount();
+        isGoodSolution = isGoodSolution();
         return "Solution{" +
                 "truckSols=" + truckSols +
                 ", overLoadCount=" + overLoadCount +
+                ", overTimeCount=" + overTimeCount +
+                ", isGoodSolution=" + isGoodSolution +
                 '}';
     }
 }

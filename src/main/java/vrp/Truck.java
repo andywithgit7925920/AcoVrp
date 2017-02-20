@@ -3,6 +3,7 @@ package vrp;
 import util.DataUtil;
 
 import java.util.LinkedList;
+
 import static vrp.VRP.*;
 
 
@@ -13,8 +14,6 @@ import static vrp.VRP.*;
 public class Truck {
     private int id;
     //private double capacity;    //载重量
-    /**************暂未使用****************/
-    public static double capacity;
     private double nowCapacity; //当前载重量
     private LinkedList<Integer> customers = new LinkedList<Integer>();   //该路径的所有客户
     private int currentCus; ////当前客户
@@ -22,17 +21,25 @@ public class Truck {
     private int firstCus;   //第一个客户
     private int lastCus;    //最后一个客户
     private double penalty;     //惩罚
+    public static double serviceTime;     //服务时间
+    private boolean isOverLoad;  //是否超载
+    private boolean isOverTime; //是否超出时间窗约束
     /**************暂未使用****************/
     private double height;  //高
+    private double nowServiceTime;  //当前服务时间
     private double width;   //长
     private double length;  //宽
     private double maxDistance;     //限制的最长距离
-    private double serviceTime;     //服务时间
+    public static double capacity;
+
+    /**************暂未使用****************/
+
 
     public Truck(int id) {
         this.id = id;
         nowCapacity = 0;
         currentCus = 0;
+        nowServiceTime = 0;
     }
 
     /**
@@ -44,6 +51,50 @@ public class Truck {
         refreshNowCap();
         return DataUtil.more(nowCapacity, capacity);
     }
+
+    /**
+     * 是否超出时间窗
+     * 1.单个客户是否超出
+     * 2.总体是否超出
+     *
+     * @return
+     */
+    public boolean isOverTime() {
+        double nowTime = 0.0;
+        if (customers.size() > 0) {
+            nowTime += distance[0][getFirstCus()];
+            for (int i = 0; i < customers.size() - 1; i++) {
+                int curCustomer = customers.get(i);
+                if (nowTime > VRP.time[curCustomer][1]) {
+                    return true;
+                }
+                nowTime += VRP.serviceTime[curCustomer];
+                int nextCustomer = customers.get(i + 1);
+                nowTime += distance[curCustomer][nextCustomer];
+            }
+            if (nowTime > VRP.time[getLastCus()][1]) {
+                nowTime += VRP.serviceTime[getLastCus()];
+                return true;
+            }
+            nowTime += distance[getLastCus()][0];
+            if (nowTime > VRP.time[0][1]) {
+                return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 是否是一条好的路径
+     *
+     * @return
+     */
+    public boolean isGoodTruck() {
+        return !isOverTime()&&!isOverLoad();
+    }
+
 
     /**
      * 卡车是否出发
@@ -67,7 +118,17 @@ public class Truck {
     }
 
     /**
-     * 更新当前载重量
+     * 删除路径中最后一个客户
+     */
+    public void removeLastCus() {
+        removeNowCapacity(clientDemandArr[customers.getLast()]);
+        customers.removeLast();
+        currentCus = customers.getLast();
+
+    }
+
+    /**
+     * 增加当前载重量
      *
      * @param demand
      * @return
@@ -77,15 +138,35 @@ public class Truck {
     }
 
     /**
+     * 减少当前载重量
+     *
+     * @param demand
+     */
+    public void removeNowCapacity(double demand) {
+        nowCapacity -= demand;
+    }
+
+    /**
      * 判断是否能够加入新的客户
+     * 可以：true 不可以：false
      *
      * @param nowCus
      * @return
      */
     public boolean checkNowCus(int nowCus) {
         refreshNowCap();
-        return capacity >= nowCapacity + clientDemandArr[nowCus];
+        boolean flag4Capacity = capacity >= nowCapacity + clientDemandArr[nowCus];
+        addCus(nowCus);
+        boolean flag4Time = !isOverTime();
+        if (flag4Capacity && flag4Time) {
+            removeLastCus();
+            return true;
+        } else {
+            removeLastCus();
+            return false;
+        }
     }
+
 
     /**
      * 计算一辆车的路径长度
@@ -116,12 +197,16 @@ public class Truck {
     @Override
     public String toString() {
         refreshNowCap();
+        isOverLoad = isOverLoad;
+        isOverTime = isOverTime();
         return "Truck{" +
                 "id=" + id +
                 ", capacity=" + capacity +
                 ", nowCapacity=" + nowCapacity +
                 ", customers=" + customers +
                 ", cusNum=" + cusNum +
+                ", isOverLoad=" + isOverLoad +
+                ", isOverTime=" + isOverTime +
                 '}';
     }
 
@@ -241,11 +326,31 @@ public class Truck {
         this.lastCus = lastCus;
     }
 
+    /**
+     * 更新当前载重量
+     */
     public void refreshNowCap() {
         nowCapacity = 0.0;
         for (Integer cus : customers) {
             adddNowCapacity(clientDemandArr[cus]);
         }
     }
+
+    /**
+     *更新当前服务时间
+     */
+    /*private void refreshNowServiceTime() {
+        nowServiceTime = 0.0;
+        if (customers.size() > 0) {
+            nowServiceTime += distance[0][customers.get(0)];
+            for (int i = 0; i < customers.size() - 1; i++) {
+                int cus = customers.get(i);
+                int next = customers.get(i + 1);
+                nowServiceTime += VRP.serviceTime[i];
+                nowServiceTime += distance[cus][next];
+            }
+            nowServiceTime += VRP.serviceTime[customers.size() - 1];
+        }
+    }*/
     /*********getters and setters**********/
 }
