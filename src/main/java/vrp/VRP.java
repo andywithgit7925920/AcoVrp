@@ -7,20 +7,28 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 /**
  * Created by ab792 on 2017/1/18.
  */
 public class VRP {
     /******待读取信息******/
-    public static Integer clientNum;
-    public static Integer capacity;
-    public static double[][] distance;
-    public static int[] clientDemandArr;
+    /***********vrp***********/
+    public static Integer clientNum;    //顾客数量
+    public static Integer capacity;     //货车容量
+    public static double[][] distance;  //距离矩阵
+    public static double[] clientDemandArr;    //顾客需求
+    /************vrp**********/
+    /***********vrptw***********/
+    public static double[] serviceTime;   //服务时间
+    public static double[][] time;     //车辆起止时间
+    /************vrptw**********/
     /******待读取信息******/
 
     /**
      * 读取对应的文件信息
+     *
      * @param filePath
      * @throws IOException
      */
@@ -35,7 +43,7 @@ public class VRP {
         while (!"EOF".equals((line = reader.readLine()).trim())) {
             if (line.startsWith("DIMENSION")) {
                 clientNum = Integer.valueOf(line.substring(12));
-                clientDemandArr = new int[clientNum];
+                clientDemandArr = new double[clientNum];
                 x_Axis = new Double[clientNum];
                 y_Axis = new Double[clientNum];
             }
@@ -79,6 +87,86 @@ public class VRP {
         //ArrayUtil.printArr(x_Axis);
         //ArrayUtil.printArr(y_Axis);
         ArrayUtil.printArr(clientDemandArr);
+        MatrixUtil.printMatrix(distance);
+    }
+
+    public static void importDataFromSolomon(String filePath) throws IOException {
+        Double[] x_Axis = null;
+        Double[] y_Axis = null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)));
+        String line;
+        boolean flag4InformationSection = false;
+        while (!"EOF".equals((line = reader.readLine()).trim())) {
+            if (line.startsWith("DIMENSION")) {
+                clientNum = 1 + Integer.valueOf(line.substring(12));
+                clientDemandArr = new double[clientNum];
+                serviceTime = new double[clientNum];
+                x_Axis = new Double[clientNum];
+                y_Axis = new Double[clientNum];
+                time = new double[clientNum][2];
+                System.out.println("clientNum--->" + clientNum);
+            }
+            if (line.startsWith("CAPACITY")) {
+                capacity = Integer.valueOf(line.substring(11));
+                //将值直接赋给truck
+                Truck.capacity = capacity;
+                System.out.println("capacity--->" + capacity);
+            }
+            if (line.startsWith("INFORMATION")) {
+                flag4InformationSection = !flag4InformationSection;
+                reader.readLine();
+            }
+            if (flag4InformationSection) {
+                for (int i = 0; i < clientNum; i++) {
+                    Scanner scanner = new Scanner(reader.readLine().trim());
+                    for (int j = 0; j < 7; j++) {
+                        double temp = scanner.nextDouble();
+                        if (j == 1) {
+                            x_Axis[i] = temp;
+                        }
+                        if (j == 2) {
+                            y_Axis[i] = temp;
+                        }
+                        if (j == 3) {
+                            clientDemandArr[i] = temp;
+                        }
+                        if (j == 4) {
+                            time[i][0] = temp;
+                        }
+                        if (j == 5) {
+                            time[i][1] = temp;
+                        }
+                        if (j == 6) {
+                            serviceTime[i] = temp;
+                        }
+                    }
+                }
+            }
+        }
+        //计算距离矩阵
+        distance = new double[clientNum][clientNum];
+        for (int i = 0; i < clientNum; i++) {
+            distance[i][i] = 0.0;
+            for (int j = i + 1; j < clientNum; j++) {
+                Double len = Math.sqrt((x_Axis[i] - x_Axis[j]) * (x_Axis[i] - x_Axis[j]) + (y_Axis[i] - y_Axis[j]) * (y_Axis[i] - y_Axis[j]));
+                distance[i][j] = len;
+                distance[j][i] = distance[i][j];
+            }
+        }
+        //ArrayUtil.printArr(x_Axis);
+        //ArrayUtil.printArr(y_Axis);
+        System.out.println("=========clientDemandArr===========");
+        ArrayUtil.printArr(clientDemandArr);
+        System.out.println("=========serviceTime===========");
+        ArrayUtil.printArr(serviceTime);
+        System.out.println("=========time===========");
+        for (int i=0;i<time.length;i++){
+            for (int j=0;j<time[i].length;j++){
+                System.out.print(time[i][j]+" ");
+            }
+            System.out.print("\n");
+        }
+        System.out.println("=========distance===========");
         MatrixUtil.printMatrix(distance);
     }
 }

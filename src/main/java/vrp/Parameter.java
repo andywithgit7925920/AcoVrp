@@ -5,6 +5,7 @@ package vrp;
  */
 public class Parameter {
     public static final String filePath = "benchmark\\A-VRP\\A-n33-k5.vrp";
+    public static final String filePathSolomon = "benchmark\\solomon\\C101.vrp";
     /****蚁群算法相关****/
     public static final Double ALPHA = 2.0;    //信息素影响因子
     public static final Double BETA = 3.0;     //启发信息影响因子
