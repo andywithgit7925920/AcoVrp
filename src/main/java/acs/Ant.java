@@ -1,10 +1,10 @@
 package acs;
 
-import util.ArrayUtil;
+import util.DataUtil;
 import vrp.Solution;
+import vrp.Truck;
 
 import static vrp.Parameter.*;
-import static util.LogUtil.logger;
 import static vrp.VRP.*;
 
 import java.util.*;
@@ -17,6 +17,7 @@ public class Ant {
     private int[] allowedClient;  //允许访问的城市
     private int[] visitedClient;    //取值0或1，1表示已经访问过，0表示未访问过
     private double[][] delta;   //信息素变化矩阵
+
     public Ant() {
         allowedClient = new int[clientNum];
         delta = new double[clientNum][clientNum];
@@ -44,67 +45,49 @@ public class Ant {
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-        /*logger.info("ant .. selectNextClient...begin");
-        logger.info("allowedClient---" );
+        //logger.info("ant .. selectNextClient...begin");
+        /*logger.info("allowedClient---" );
         ArrayUtil.printArr(allowedClient);
         logger.info("visitedClient---" );
         ArrayUtil.printArr(visitedClient);*/
-        //如果当前处在起始点，则下一步不能选择起始点
         double[] p = new double[clientNum];
         double sum = 0.0;
-        int currentCus = solution.getCurrentTruck().getCurrentCus();
-        //logger.info("currentCus-->"+currentCus);
+        Truck currTruck = solution.getCurrentTruck();
+        int currentCus = currTruck.getCurrentCus();
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
-                //System.out.println("sum--->"+sum);
-                //System.out.println("Math.pow(pheromone[currentCus][i], ALPHA)--->"+Math.pow(pheromone[currentCus][i], ALPHA));
-                /*System.out.println("currentCus-->"+currentCus);
-                System.out.println("i--->"+i);
-                System.out.println("Math.pow(1.0 / distance[currentCus][i], BETA)--->"+Math.pow(1.0 / distance[currentCus][i], BETA));
-                System.out.println("distance[currentCus][i]--->"+distance[currentCus][i]);*/
+                double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
+                waitTime = (DataUtil.eq(waitTime, 0.0)) ? 0.1 : waitTime;
+                sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) * Math.pow(1.0 / time[i][2], GAMMA) * Math.pow(1.0 / waitTime, Delta);
+                //sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
             }
         }
-        //logger.info("total sum---"+sum);
-        /*if (sum ==0){
-            for (int i = 0; i < allowedClient.length; i++) {
-                if (allowedClient[i] == 1) {
-                    *//*System.out.println("i--->"+i);
-                    System.out.println("pheromone[currentCus][i]--->"+pheromone[currentCus][i]);
-                    System.out.println("1.0 / distance[currentCus][i]--->"+1.0 / distance[currentCus][i]);
-                    sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);*//*
-                }
-            }
-            System.exit(-1);
-        }*/
         //计算概率矩阵
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) / sum;
+                double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
+                waitTime = (DataUtil.eq(waitTime, 0.0)) ? 0.1 : waitTime;
+                p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) * Math.pow(1.0 / time[i][2], GAMMA) * Math.pow(1.0 / waitTime, Delta) / sum;
+                //p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA)/sum;
             } else {
                 p[i] = 0.0;
             }
         }
         //轮盘赌选择下一个城市
-        double selectP = Math.random();
-        //logger.info("selectP-->"+selectP);
-        int selectClient = 0;
-        double sum1 = 0.f;
-        for (int i = 0; i < clientNum; i++) {
-            sum1 += p[i];
-            if (sum1 >= selectP) {
-                selectClient = i;
-                break;
-            }
+        double R = Math.random();
+        int selectedClient;
+        if (R <= R0) {
+            selectedClient = stateTransferRule1(p);
+        } else {
+            selectedClient = stateTransferRule2(p, R);
         }
         //从允许选择的城市中去除selectClient
-        visitedClient[selectClient] = 1;
-        allowedClient[selectClient] = 0;
+        visitedClient[selectedClient] = 1;
+        allowedClient[selectedClient] = 0;
 
-        //logger.info("selectCliend---"+selectClient);
         //将当前城市加入solution中
-        solution.addCus(selectClient);
+        solution.addCus(selectedClient);
         for (int i = 0; i < allowedClient.length; i++) {
             //solution检查各项约束条件是否允许
             if (allowedClient[i] == 1 && !solution.getCurrentTruck().checkNowCus(i)) {
@@ -112,7 +95,7 @@ public class Ant {
             }
         }
         //如果当前已经走完一个循环,如果allowedClient只包含0点，则进入下一循环
-        if ((OnlyContainsDeposit(allowedClient)&&!visitFinish())) {
+        if ((OnlyContainsDeposit(allowedClient) && !visitFinish())) {
             //System.out.println("走完一个循环");
             solution.increaseLoop();
             initAllowClient2Zero(allowedClient);
@@ -123,11 +106,48 @@ public class Ant {
                 }
             }
         }
-        //如果当前路径不在出发点，那么可以回到出发点
-        /*if (!solution.getCurrentTruck().isEmpty()) {
-            allowedClient[0] = 1;
-        }*/
         //logger.info("ant .. selectNextClient...end");
+    }
+
+    /**
+     * 状态转移规则2
+     * 轮盘赌选择客户
+     *
+     * @param p
+     * @param r
+     * @return
+     */
+    private int stateTransferRule2(double[] p, double r) {
+        int selectedClient = 0;
+        double sum = 0.0;
+        for (int i = 0; i < p.length; i++) {
+            sum += p[i];
+            if (sum >= r) {
+                selectedClient = i;
+                break;
+            }
+        }
+        return selectedClient;
+    }
+
+
+    /**
+     * 状态转移规则1
+     * 寻找p中最大值对应的index
+     *
+     * @param p
+     * @return
+     */
+    private int stateTransferRule1(double[] p) {
+        double maxVal = Double.MIN_VALUE;
+        int index = 0;
+        for (int i = 0; i < p.length; i++) {
+            if (p[i] > maxVal) {
+                maxVal = p[i];
+                index = i;
+            }
+        }
+        return index;
     }
 
 
@@ -204,7 +224,6 @@ public class Ant {
     public double getLength() {
         return calculateTourLength();
     }
-
 
 
     public int[] getVisitedClient() {

@@ -1,5 +1,5 @@
 NAME : c101
-COMMENT : (Min no of trucks: 10, Optimal value: 827.3)
+COMMENT : (Min no of trucks: 10, Optimal value: 828.94)
 TYPE : CVRPTW
 DIMENSION : 100
 EDGE_WEIGHT_TYPE : EUC_2D 

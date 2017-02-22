@@ -103,7 +103,7 @@ public class VRP {
                 serviceTime = new double[clientNum];
                 x_Axis = new Double[clientNum];
                 y_Axis = new Double[clientNum];
-                time = new double[clientNum][2];
+                time = new double[clientNum][3];
                 System.out.println("clientNum--->" + clientNum);
             }
             if (line.startsWith("CAPACITY")) {
@@ -135,6 +135,7 @@ public class VRP {
                         }
                         if (j == 5) {
                             time[i][1] = temp;
+                            time[i][2] = time[i][1] - time[i][0];
                         }
                         if (j == 6) {
                             serviceTime[i] = temp;
@@ -161,9 +162,9 @@ public class VRP {
         System.out.println("=========serviceTime===========");
         ArrayUtil.printArr(serviceTime);
         System.out.println("=========time===========");
-        for (int i= 0;i<time.length;i++){
-            for (int j=0;j<time[i].length;j++){
-                System.out.print(time[i][j]+" ");
+        for (int i = 0; i < time.length; i++) {
+            for (int j = 0; j < time[i].length; j++) {
+                System.out.print(time[i][j] + " ");
             }
             System.out.print("\n");
         }

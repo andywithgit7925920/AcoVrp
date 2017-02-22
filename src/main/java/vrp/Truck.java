@@ -24,9 +24,9 @@ public class Truck {
     public static double serviceTime;     //服务时间
     private boolean isOverLoad;  //是否超载
     private boolean isOverTime; //是否超出时间窗约束
+    private double nowServiceTime;  //当前服务时间
     /**************暂未使用****************/
     private double height;  //高
-    private double nowServiceTime;  //当前服务时间
     private double width;   //长
     private double length;  //宽
     private double maxDistance;     //限制的最长距离
@@ -53,6 +53,7 @@ public class Truck {
     }
 
     /**
+     * 软时间窗约束
      * 是否超出时间窗
      * 1.单个客户是否超出
      * 2.总体是否超出
@@ -68,14 +69,18 @@ public class Truck {
                 if (nowTime > VRP.time[curCustomer][1]) {
                     return true;
                 }
+                //如果当前时间没达到ET，则需要等到ET才可以开始服务
+                nowTime = (nowTime < VRP.time[curCustomer][0]) ? VRP.time[curCustomer][0] : nowTime;
                 nowTime += VRP.serviceTime[curCustomer];
                 int nextCustomer = customers.get(i + 1);
                 nowTime += distance[curCustomer][nextCustomer];
             }
             if (nowTime > VRP.time[getLastCus()][1]) {
-                nowTime += VRP.serviceTime[getLastCus()];
                 return true;
             }
+            //如果当前时间没达到ET，则需要等到ET才可以开始服务
+            nowTime = (nowTime < VRP.time[getLastCus()][0]) ? VRP.time[getLastCus()][0] : nowTime;
+            nowTime += VRP.serviceTime[getLastCus()];
             nowTime += distance[getLastCus()][0];
             if (nowTime > VRP.time[0][1]) {
                 return true;
@@ -92,7 +97,7 @@ public class Truck {
      * @return
      */
     public boolean isGoodTruck() {
-        return !isOverTime()&&!isOverLoad();
+        return !isOverTime() && !isOverLoad();
     }
 
 
@@ -121,9 +126,12 @@ public class Truck {
      * 删除路径中最后一个客户
      */
     public void removeLastCus() {
-        removeNowCapacity(clientDemandArr[customers.getLast()]);
-        customers.removeLast();
-        currentCus = customers.getLast();
+        if (customers.size()>0){
+            removeNowCapacity(clientDemandArr[customers.getLast()]);
+            customers.removeLast();
+        }
+
+        currentCus = (customers.size()>0)?customers.getLast():0;
 
     }
 
@@ -154,15 +162,18 @@ public class Truck {
      * @return
      */
     public boolean checkNowCus(int nowCus) {
+        //System.out.println("====Truck.checkNowCus begin====");
         refreshNowCap();
         boolean flag4Capacity = capacity >= nowCapacity + clientDemandArr[nowCus];
         addCus(nowCus);
         boolean flag4Time = !isOverTime();
         if (flag4Capacity && flag4Time) {
             removeLastCus();
+            //System.out.println("====Truck.checkNowCus end====");
             return true;
         } else {
             removeLastCus();
+            //System.out.println("====Truck.checkNowCus end====");
             return false;
         }
     }
@@ -337,6 +348,29 @@ public class Truck {
     }
 
     /**
+     * 计算当前服务时间
+     * @return
+     */
+    public double calNowServiceTime() {
+        nowServiceTime = 0.0;
+        if (customers.size() > 0) {
+            nowServiceTime += distance[0][getFirstCus()];
+            for (int i = 0; i < customers.size() - 1; i++) {
+                int curCustomer = customers.get(i);
+                //如果当前时间没达到ET，则需要等到ET才可以开始服务
+                nowServiceTime = (nowServiceTime < VRP.time[curCustomer][0]) ? VRP.time[curCustomer][0] : nowServiceTime;
+                nowServiceTime += VRP.serviceTime[curCustomer];
+                int nextCustomer = customers.get(i + 1);
+                nowServiceTime += distance[curCustomer][nextCustomer];
+            }
+            //如果当前时间没达到ET，则需要等到ET才可以开始服务
+            nowServiceTime = (nowServiceTime < VRP.time[getLastCus()][0]) ? VRP.time[getLastCus()][0] : nowServiceTime;
+            nowServiceTime += VRP.serviceTime[getLastCus()];
+        }
+        return nowServiceTime;
+    }
+
+/**
      *更新当前服务时间
      */
     /*private void refreshNowServiceTime() {
