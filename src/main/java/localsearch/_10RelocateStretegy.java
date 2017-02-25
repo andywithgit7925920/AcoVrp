@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by ab792 on 2017/2/18.
  * 路径内点的剥离和插入
  */
-public class _10Relocate implements BaseStretegy {
+public class _10RelocateStretegy implements BaseStretegy {
     public void updateSolution(Solution preSolution) throws Exception {
         if (preSolution == null || preSolution.getTruckSols() == null)
             return;

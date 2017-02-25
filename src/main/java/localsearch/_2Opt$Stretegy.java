@@ -48,7 +48,7 @@ public class _2Opt$Stretegy implements BaseStretegy {
                                 //交换
                                 _2Opt$Swap(nowTruck, compareTruck, k, m);
                                 if (!nowTruck.isOverLoad() && !compareTruck.isOverLoad()) {
-                                    if (!nowTruck.isOverTime() && !compareTruck.isOverTime()) {
+                                    if (!nowTruck.isOverTimeForHard() && !compareTruck.isOverTimeForHard()) {
                                     /*System.out.println("============================");
                                     System.out.println("交换后的车辆未超载");
                                     System.out.println("==!nowTruck.isOverLoad() && !compareTruck.isOverLoad()==");

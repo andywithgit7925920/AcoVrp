@@ -1,6 +1,7 @@
 package updatestrategy;
 
 import acs.Ant;
+import util.DataUtil;
 import vrp.Parameter;
 import vrp.Solution;
 
@@ -12,9 +13,17 @@ import static vrp.VRP.*;
 public abstract class BaseUpdateStrategy {
     public double P = Parameter.RHO;
 
-    public abstract void update(double[][] pheromone, Solution solution);
+    public abstract void updatePheBySolution(double[][] pheromone, Solution solution);
 
-    public void update(double[][] pheromone, Ant ant) {
+
+    /**
+     * 第一种更新策略
+     * 每次更新前全局信息素挥发
+     *
+     * @param pheromone
+     * @param ant
+     */
+    public void updateByAntRule1(double[][] pheromone, Ant ant) {
         //System.out.println("ConstUtil.PHEROMONE_MAX--->"+ConstUtil.PHEROMONE_MAX);
         //System.out.println("ConstUtil.PHEROMONE_MIN--->"+ConstUtil.PHEROMONE_MIN );
         //信息素挥发
@@ -33,8 +42,15 @@ public abstract class BaseUpdateStrategy {
         checkPheromoneLimit(pheromone);
     }
 
-    public void update(double[][] pheromone, Ant[] ants) {
-        System.out.println("BaseUpdateStrategy.update");
+    /**
+     * 第一种更新策略
+     * 每次更新前全局信息素挥发
+     *
+     * @param pheromone
+     * @param ants
+     */
+    public void updateByAntRule1(double[][] pheromone, Ant[] ants) {
+        //System.out.println("BaseUpdateStrategy.update");
         //信息素挥发
         for (int i = 0; i < clientNum; i++) {
             for (int j = 0; j < clientNum; j++) {
@@ -42,11 +58,58 @@ public abstract class BaseUpdateStrategy {
             }
         }
         checkPheromoneLimit(pheromone);
-        for (int i=0;i<ants.length;i++){
+        for (int i = 0; i < ants.length; i++) {
             //信息素更新
             for (int j = 0; j < clientNum; j++) {
                 for (int k = 0; k < clientNum; k++) {
                     pheromone[j][k] += ants[i].getDelta()[j][k];
+                }
+            }
+        }
+    }
+
+    public void updateByAntRule1(double[][] pheromone, Ant[] ants,Ant bestAnt) {
+        //System.out.println("BaseUpdateStrategy.update");
+        //信息素挥发
+        for (int i = 0; i < clientNum; i++) {
+            for (int j = 0; j < clientNum; j++) {
+                pheromone[i][j] *= P;
+            }
+        }
+        checkPheromoneLimit(pheromone);
+        for (int i = 0; i < ants.length; i++) {
+            //信息素更新
+            for (int j = 0; j < clientNum; j++) {
+                for (int k = 0; k < clientNum; k++) {
+                    pheromone[j][k] += ants[i].getDelta()[j][k];
+                }
+            }
+        }
+        //精英蚂蚁信息素更新
+        for (int j = 0; j < clientNum; j++) {
+            for (int k = 0; k < clientNum; k++) {
+                pheromone[j][k] += bestAnt.getDelta()[j][k];
+            }
+        }
+        checkPheromoneLimit(pheromone);
+
+    }
+
+    /**
+     * 第二种更新策略
+     * 路线上的信息素不挥发
+     *
+     * @param pheromone
+     * @param ant
+     */
+    public void updateByAntRule2(double[][] pheromone, Ant ant) {
+        //信息素更新
+        for (int i = 0; i < clientNum; i++) {
+            for (int j = 0; j < clientNum; j++) {
+                if (DataUtil.more(ant.getDelta()[i][j], 0.0)) {
+                    pheromone[i][j] += ant.getDelta()[i][j];
+                }else {
+                    pheromone[i][j] *= P;
                 }
             }
         }

@@ -11,7 +11,7 @@ import vrp.Solution;
 public class UpdateStrategy4Case1 extends BaseUpdateStrategy {
     public double P = Math.pow(1 - Parameter.RHO, 3);
 
-    public void update(double[][] pheromone, Solution solution) {
+    public void updatePheBySolution(double[][] pheromone, Solution solution) {
         if (pheromone != null && solution != null) {
             for (int k1 = 0; k1 < solution.size(); k1++) {
                 pheromone[0][solution.getTruckSols().get(k1).getCustomers().get(0)] *= P;

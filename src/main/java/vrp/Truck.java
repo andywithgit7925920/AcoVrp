@@ -92,12 +92,48 @@ public class Truck {
     }
 
     /**
+     * 硬时间窗
+     *
+     * @return
+     */
+    public boolean isOverTimeForHard() {
+        double nowTime = 0.0;
+        if (customers.size() > 0) {
+            nowTime += distance[0][getFirstCus()];
+            for (int i = 0; i < customers.size() - 1; i++) {
+                int curCustomer = customers.get(i);
+                if (nowTime > VRP.time[curCustomer][1] || nowTime < VRP.time[curCustomer][0]) {
+                    return true;
+                }
+                //如果当前时间没达到ET，则需要等到ET才可以开始服务
+                nowTime = (nowTime < VRP.time[curCustomer][0]) ? VRP.time[curCustomer][0] : nowTime;
+                nowTime += VRP.serviceTime[curCustomer];
+                int nextCustomer = customers.get(i + 1);
+                nowTime += distance[curCustomer][nextCustomer];
+            }
+            if (nowTime > VRP.time[getLastCus()][1] || nowTime < VRP.time[getLastCus()][0]) {
+                return true;
+            }
+            //如果当前时间没达到ET，则需要等到ET才可以开始服务
+            nowTime = (nowTime < VRP.time[getLastCus()][0]) ? VRP.time[getLastCus()][0] : nowTime;
+            nowTime += VRP.serviceTime[getLastCus()];
+            nowTime += distance[getLastCus()][0];
+            if (nowTime > VRP.time[0][1]) {
+                return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 是否是一条好的路径
      *
      * @return
      */
     public boolean isGoodTruck() {
-        return !isOverTime() && !isOverLoad();
+        return !isOverTimeForHard() && !isOverLoad();
     }
 
 
@@ -126,12 +162,12 @@ public class Truck {
      * 删除路径中最后一个客户
      */
     public void removeLastCus() {
-        if (customers.size()>0){
+        if (customers.size() > 0) {
             removeNowCapacity(clientDemandArr[customers.getLast()]);
             customers.removeLast();
         }
 
-        currentCus = (customers.size()>0)?customers.getLast():0;
+        currentCus = (customers.size() > 0) ? customers.getLast() : 0;
 
     }
 
@@ -166,7 +202,7 @@ public class Truck {
         refreshNowCap();
         boolean flag4Capacity = capacity >= nowCapacity + clientDemandArr[nowCus];
         addCus(nowCus);
-        boolean flag4Time = !isOverTime();
+        boolean flag4Time = !isOverTimeForHard();
         if (flag4Capacity && flag4Time) {
             removeLastCus();
             //System.out.println("====Truck.checkNowCus end====");
@@ -208,8 +244,9 @@ public class Truck {
     @Override
     public String toString() {
         refreshNowCap();
-        isOverLoad = isOverLoad;
-        isOverTime = isOverTime();
+        isOverLoad = isOverLoad();
+        isOverTime = isOverTimeForHard();
+        cusNum = customers.size();
         return "Truck{" +
                 "id=" + id +
                 ", capacity=" + capacity +
@@ -342,13 +379,16 @@ public class Truck {
      */
     public void refreshNowCap() {
         nowCapacity = 0.0;
-        for (Integer cus : customers) {
-            adddNowCapacity(clientDemandArr[cus]);
+        if (!customers.isEmpty()) {
+            for (Integer cus : customers) {
+                adddNowCapacity(clientDemandArr[cus]);
+            }
         }
     }
 
     /**
      * 计算当前服务时间
+     *
      * @return
      */
     public double calNowServiceTime() {
@@ -371,8 +411,8 @@ public class Truck {
     }
 
 /**
-     *更新当前服务时间
-     */
+ *更新当前服务时间
+ */
     /*private void refreshNowServiceTime() {
         nowServiceTime = 0.0;
         if (customers.size() > 0) {
@@ -387,4 +427,16 @@ public class Truck {
         }
     }*/
     /*********getters and setters**********/
+
+    /**
+     * 复制
+     *
+     * @return
+     */
+    public Truck clone() {
+        Truck cloneTruck = new Truck(this.getId());
+        cloneTruck.setNowCapacity(this.nowCapacity);
+        cloneTruck.setCustomers((LinkedList<Integer>) customers.clone());
+        return cloneTruck;
+    }
 }

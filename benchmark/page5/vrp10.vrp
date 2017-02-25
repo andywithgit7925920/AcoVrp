@@ -1,0 +1,22 @@
+NAME : vrp10
+COMMENT : (Min no of trucks: 10, Optimal value: 828.94)
+TYPE : CVRPTW
+DIMENSION : 9
+EDGE_WEIGHT_TYPE : EUC_2D 
+CAPACITY : 1
+INFORMATION :
+ CUST NO.  XCOORD.   YCOORD.    DEMAND   READY TIME  DUE DATE   SERVICE TIME
+     1      99.00      39.00       0.00       0.00    300.00       0.00
+     2      39.00      70.00      0.102      74.00     124.00      0.00
+     3      22.00      15.00      0.113      58.00     108.00      0.00
+     4      97.00      79.00      0.095      15.00      65.00      0.00
+     5      6.00       28.00      0.131      96.00     146.00      0.00
+     6      62.00      79.00      0.029      47.00      97.00      0.00
+     7      42.00      88.00      0.306      85.00     135.00      0.00
+     8      86.00       3.00      0.532      21.00      71.00      0.00
+     9      87.00      61.00      0.617       9.00      59.00      0.00
+    10      88.00      91.00      0.232      37.00      87.00      0.00
+INFORMATION
+ 1  
+ -1  
+EOF 

@@ -1,9 +1,12 @@
 package acs;
 
+import util.ArrayUtil;
 import util.DataUtil;
+import util.LogUtil;
 import vrp.Solution;
 import vrp.Truck;
 
+import static util.LogUtil.*;
 import static vrp.Parameter.*;
 import static vrp.VRP.*;
 
@@ -46,19 +49,18 @@ public class Ant {
      */
     public void selectNextClient(double[][] pheromone) {
         //logger.info("ant .. selectNextClient...begin");
-        /*logger.info("allowedClient---" );
-        ArrayUtil.printArr(allowedClient);
-        logger.info("visitedClient---" );
-        ArrayUtil.printArr(visitedClient);*/
+
+        //allowedClientFilter();
         double[] p = new double[clientNum];
         double sum = 0.0;
         Truck currTruck = solution.getCurrentTruck();
         int currentCus = currTruck.getCurrentCus();
+        //logger.info("currentCus---" + currentCus);
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
-                waitTime = (DataUtil.eq(waitTime, 0.0)) ? 0.1 : waitTime;
+                waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
                 sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) * Math.pow(1.0 / time[i][2], GAMMA) * Math.pow(1.0 / waitTime, Delta);
                 //sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
             }
@@ -67,33 +69,54 @@ public class Ant {
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
-                waitTime = (DataUtil.eq(waitTime, 0.0)) ? 0.1 : waitTime;
-                p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) * Math.pow(1.0 / time[i][2], GAMMA) * Math.pow(1.0 / waitTime, Delta) / sum;
+                waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
+                p[i] = Math.pow(pheromone[currentCus][i], ALPHA)
+                        * Math.pow(1.0 / distance[currentCus][i], BETA)
+                        * Math.pow(1.0 / time[i][2], GAMMA)
+                        * Math.pow(1.0 / waitTime, Delta) / sum;
                 //p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA)/sum;
+                /*System.out.println("pheromone[currentCus][i]--->" + pheromone[currentCus][i]);
+                System.out.println("Math.pow(pheromone[currentCus][i], ALPHA) --->" + Math.pow(pheromone[currentCus][i], ALPHA));
+                System.out.println("1.0 / distance[currentCus][i]--->" + 1.0 / distance[currentCus][i]);
+                System.out.println("Math.pow(1.0 / distance[currentCus][i], BETA)--->" + Math.pow(1.0 / distance[currentCus][i], BETA));
+                System.out.println("time[i][2]--->" + time[i][2]);
+                System.out.println("Math.pow(1.0 / time[i][2], GAMMA)--->" + Math.pow(1.0 / time[i][2], GAMMA));
+                System.out.println("waitTime--->" + waitTime);
+                System.out.println("Math.pow(1.0 / waitTime, Delta) --->" + Math.pow(1.0 / waitTime, Delta));
+                System.out.println("p[i]--->" + p[i]);*/
             } else {
                 p[i] = 0.0;
             }
         }
+        //logger.info("sum---" + sum);
+        //System.out.println("=========p===========");
+        //ArrayUtil.printArr(p);
         //轮盘赌选择下一个城市
         double R = Math.random();
+        //logger.info("R---" + R);
         int selectedClient;
         if (R <= R0) {
+            //System.out.println("-----rule1-----");
             selectedClient = stateTransferRule1(p);
         } else {
+            //System.out.println("-----rule2-----");
             selectedClient = stateTransferRule2(p, R);
         }
+        //System.out.println("selectedClient---" + selectedClient);
         //从允许选择的城市中去除selectClient
         visitedClient[selectedClient] = 1;
         allowedClient[selectedClient] = 0;
-
+        /*logger.info("allowedClient---");
+        ArrayUtil.printArr(allowedClient);
+        logger.info("visitedClient---");
+        ArrayUtil.printArr(visitedClient);*/
         //将当前城市加入solution中
         solution.addCus(selectedClient);
-        for (int i = 0; i < allowedClient.length; i++) {
-            //solution检查各项约束条件是否允许
-            if (allowedClient[i] == 1 && !solution.getCurrentTruck().checkNowCus(i)) {
-                allowedClient[i] = 0;
-            }
-        }
+        allowedClientFilter();
+        /*logger.info("allowedClient---");
+        ArrayUtil.printArr(allowedClient);
+        logger.info("visitedClient---");
+        ArrayUtil.printArr(visitedClient);*/
         //如果当前已经走完一个循环,如果allowedClient只包含0点，则进入下一循环
         if ((OnlyContainsDeposit(allowedClient) && !visitFinish())) {
             //System.out.println("走完一个循环");
@@ -108,6 +131,19 @@ public class Ant {
         }
         //logger.info("ant .. selectNextClient...end");
     }
+
+    /**
+     * 筛选allowedClient
+     */
+    private void allowedClientFilter() {
+        for (int i = 0; i < allowedClient.length; i++) {
+            //solution检查各项约束条件是否允许
+            if (allowedClient[i] == 1 && !solution.getCurrentTruck().checkNowCus(i)) {
+                allowedClient[i] = 0;
+            }
+        }
+    }
+
 
     /**
      * 状态转移规则2

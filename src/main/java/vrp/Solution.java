@@ -1,6 +1,7 @@
 package vrp;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -25,6 +26,10 @@ public class Solution implements Serializable {
         Truck firstTruck = new Truck(currentCicycle);
         truckSols.add(firstTruck);
         currentTruck = firstTruck;
+    }
+
+    public Solution(LinkedList<Truck> truckSols){
+        this.truckSols = truckSols;
     }
 
     /**
@@ -156,7 +161,7 @@ public class Solution implements Serializable {
         int count = 0;
         if (truckSols.size() > 0) {
             for (Truck truck : truckSols) {
-                if (truck.isOverTime()) {
+                if (truck.isOverTimeForHard()) {
                     System.out.println("overTimeTruck--->"+truck);
                     ++count;
                 }
@@ -240,5 +245,33 @@ public class Solution implements Serializable {
                 ", overTimeCount=" + overTimeCount +
                 ", isGoodSolution=" + isGoodSolution +
                 '}';
+    }
+
+    /**
+     * 复制
+     * @return
+     */
+    public Solution clone(){
+        Solution cloneSolution = new Solution();
+        LinkedList<Truck> cloneTruckSols = new LinkedList<Truck>();
+        for (Truck truck : truckSols){
+            cloneTruckSols.add(truck.clone());
+        }
+        cloneSolution.setTruckSols(cloneTruckSols);
+        return cloneSolution;
+    }
+
+    /**
+     * 刪除空的货车
+     */
+    public void refresh() {
+        //System.out.println("Solution.refresh");
+        Iterator<Truck> it = truckSols.iterator();
+        while (it.hasNext()){
+            Truck truck = it.next();
+            if (truck.isEmpty()){
+                it.remove();
+            }
+        }
     }
 }
