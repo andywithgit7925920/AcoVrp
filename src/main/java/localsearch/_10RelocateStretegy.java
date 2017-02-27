@@ -5,9 +5,7 @@ import vrp.Truck;
 
 import static vrp.VRP.*;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Created by ab792 on 2017/2/18.
@@ -22,15 +20,10 @@ public class _10RelocateStretegy implements BaseStretegy {
             Truck truck = truckSols.get(i);
             LinkedList<Integer> customers = truck.getCustomers();
             double bestCost = truck.calCost();
-            double cost;
-            Integer[] point = new Integer[2];
             Truck newTruck;
             double newCost;
             for (int j = 0; j < customers.size() - 1; j++) {
                 for (int k = j + 1; k < customers.size(); k++) {
-                    /*System.out.println("truck---"+truck);
-                    System.out.println("j---"+j);
-                    System.out.println("k---"+k);*/
                     newTruck = insert(truck,j,k);
                     if (newTruck.isGoodTruck()){
                         newCost = newTruck.calCost();
@@ -40,21 +33,37 @@ public class _10RelocateStretegy implements BaseStretegy {
                             truckSols.add(i,newTruck);
                         }
                     }
-                    /*cost = calCost(truck, truck, j, k);
-                    if (cost > bestCost) {
-                        if (insert(truck,j,k).isGoodTruck()){
-                            point[0] = j;
-                            point[1] = k;
-                            bestCost = cost;
-                        }
-                    }*/
                 }
             }
-            /*if (bestCost > 0) {
-                truck = insert(truck, point[0], point[1]);
-            }*/
         }
     }
+    /*public void updateSolution(Solution preSolution) throws Exception {
+        if (preSolution == null || preSolution.getTruckSols() == null)
+            return;
+        LinkedList<Truck> truckSols = preSolution.getTruckSols();
+        for (int i = 0; i < truckSols.size(); i++) {
+            Truck truck = truckSols.get(i);
+            LinkedList<Integer> customers = truck.getCustomers();
+            double bestCost = truck.calCost();
+            double cost;
+            Integer[] point = new Integer[2];
+            Truck newTruck;
+            double newCost;
+            for (int j = 0; j < customers.size() - 1; j++) {
+                for (int k = j + 1; k < customers.size(); k++) {
+                    newTruck = insert(truck,j,k);
+                    if (newTruck.isGoodTruckForHard()){
+                        newCost = newTruck.calCost();
+                        if (newCost<bestCost){
+                            truckSols.remove(i);
+                            newTruck.refreshNowCap();
+                            truckSols.add(i,newTruck);
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 
     public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
         if (truck1 == null || truck2 == null || truck1.getCustomers().size() <= indexI || truck2.getCustomers().size() <= indexJ)

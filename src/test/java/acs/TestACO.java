@@ -1,7 +1,7 @@
 package acs;
 
 import org.junit.Test;
-import vrp.Parameter;
+import parameter.Parameter;
 
 import java.util.Random;
 
@@ -14,7 +14,7 @@ public class TestACO {
         org.apache.log4j.LogManager.resetConfiguration();
         org.apache.log4j.PropertyConfigurator.configure("C:\\Users\\ab792\\IdeaProjects\\AcoVrp\\src\\log4j.properties");
         ACO aco = new ACO();
-        String filePath = Parameter.filePathSolomon;
+        String filePath = Parameter.FILE_PATH_SOLOMON;
         aco.init(filePath);
         aco.run();
 

@@ -23,6 +23,7 @@ public class VRP {
     /***********vrptw***********/
     public static double[] serviceTime;   //服务时间
     public static double[][] time;     //车辆起止时间
+    public static double[][] savedQnuantity;    //节约量
     /************vrptw**********/
     /******待读取信息******/
 
@@ -156,6 +157,15 @@ public class VRP {
                 distance[j][i] = distance[i][j];
             }
         }
+        //计算节约量
+        savedQnuantity = new double[clientNum][clientNum];
+        for (int i = 0; i < clientNum; i++) {
+            savedQnuantity[i][i] = distance[i][0] + distance[0][i] - distance[i][i];
+            for (int j = i + 1; j < clientNum; j++) {
+                savedQnuantity[i][j] = distance[i][0] + distance[0][j] - distance[i][j];
+                savedQnuantity[j][i] = savedQnuantity[i][j];
+            }
+        }
         //开始打印数据
         System.out.println("=========clientDemandArr===========");
         ArrayUtil.printArr(clientDemandArr);
@@ -170,5 +180,7 @@ public class VRP {
         }
         System.out.println("=========distance===========");
         MatrixUtil.printMatrix(distance);
+        System.out.println("=========savedQnuantity===========");
+        MatrixUtil.printMatrix(savedQnuantity);
     }
 }

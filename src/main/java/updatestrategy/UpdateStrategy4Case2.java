@@ -1,6 +1,6 @@
 package updatestrategy;
 
-import vrp.Parameter;
+import parameter.Parameter;
 import vrp.Solution;
 
 /**

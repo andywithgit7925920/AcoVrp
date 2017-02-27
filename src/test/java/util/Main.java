@@ -13,7 +13,7 @@ public class Main {
         list.add("a");
         list.add("b");
         list.add("c");
-        list.add("d");
+        list.add("PUNISH_LEFT");
         //System.out.println(list);
         list.addFirst("first");
         //System.out.println(list);

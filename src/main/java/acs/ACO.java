@@ -10,8 +10,9 @@ import static vrp.VRP.*;
 
 import util.DataUtil;
 import util.StringUtil;
-import vrp.Parameter;
+import parameter.Parameter;
 import vrp.Solution;
+import vrp.VRP;
 
 import java.io.IOException;
 
@@ -41,7 +42,7 @@ public class ACO {
         if (StringUtil.isNotEmpty(filePath)) {
             try {
                 //导入数据
-                //importDataFromAVRP(filePath);
+                //importDataFromAVRP(FILE_PATH);
                 importDataFromSolomon(filePath);
                 //初始化信息素矩阵
                 pheromone = new double[clientNum][clientNum];
@@ -54,12 +55,12 @@ public class ACO {
                 //初始化蚂蚁
                 initAntCommunity();
             } catch (IOException e) {
-                System.err.print("filePath invalid!");
+                System.err.print("FILE_PATH invalid!");
                 e.printStackTrace();
             }
 
         } else {
-            System.err.print("filePath empty!");
+            System.err.print("FILE_PATH empty!");
         }
     }
 
@@ -77,19 +78,19 @@ public class ACO {
      * ACO的运行过程
      */
     public void run() throws Exception {
+        int RHOCounter = 0;
+        Solution pre3Solution = null;
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
             System.out.println("ITER_NUM:" + i);
-            //bestSolution = null;
-            //bestAnt = null;
             //对于每一只蚂蚁
             for (int j = 0; j < antNum; j++) {
-                logger.info("第" + j + "只蚂蚁开始");
+                //logger.info("第" + j + "只蚂蚁开始");
                 while (!ants[j].visitFinish()) {
                     ants[j].selectNextClient(pheromone);
                 }
-                System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
-                //System.out.println("第" + j + "只蚂蚁路径" + ants[j].getSolution());
+                //System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
+                //System.out.println("第" + j + "只蚂蚁的解"+ants[j].getSolution());
                 //改变信息素更新策略
                 if (bestSolution == null && bestAnt == null) {
                     //logger.info("=========case1==========");
@@ -98,6 +99,7 @@ public class ACO {
                     bestSolution = bestAnt.getSolution();
                     //更新最大最小信息素
                     updateMaxMinPheromone();
+                    pre3Solution = bestSolution;
                 }
                 //1.若𝑅的用车数大于𝑅∗的 用车数, 则将𝑅中所有边上的信息素进行大量蒸发
                 else if (ants[j].getSolution().getTruckNum() > bestSolution.getTruckNum()) {
@@ -106,7 +108,7 @@ public class ACO {
                     baseUpdateStrategy.updatePheBySolution(pheromone, ants[j].getSolution());
                 }
                 //2.若𝑅的用车数等 于𝑅∗的用车数, 但𝑅的距离/时间费用大于等于𝑅∗相 应的费用, 则将𝑅中所有边上的信息素进行少量蒸发
-                else if (ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && ants[j].getLength() >= bestLen) {
+                else if (ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.ge(ants[j].getLength(), bestLen)) {
                     //logger.info("=========case3==========");
                     setBaseUpdateStrategy(new UpdateStrategy4Case2());
                     baseUpdateStrategy.updatePheBySolution(pheromone, ants[j].getSolution());
@@ -114,44 +116,36 @@ public class ACO {
                 //logger.info("优化前--------------------------------------------------------->" + ants[j].getLength());
                 /**********优化解 begin**********/
                 //logger.info("=========优化解 begin==========");
-
-                setStretegy(new _2OptStretegy());
+                /*setStretegy(new _2OptStretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
                 }
-                System.out.println("2opt优化后-------------------------------->" + ants[j].getLength());
+                //System.out.println("2opt优化后-------------------------------->" + ants[j].getLength());
                 setStretegy(new _10RelocateStretegy());
                 for (int m = 0; m < 3; m++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }
-                System.out.println("10relocate优化后-------------------------------->" + ants[j].getLength());
-                setStretegy(new _2Opt$Stretegy());
+                }*/
+                //System.out.println("10relocate优化后-------------------------------->" + ants[j].getLength());
+                /*setStretegy(new _2Opt$Stretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }
-                System.out.println("2opt*优化后------------------------->" + ants[j].getLength());
-                setStretegy(new _10Relocate$Stretegy());
+                }*/
+                //System.out.println("2opt*优化后------------------------->" + ants[j].getLength());
+                /*setStretegy(new _10Relocate$Stretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }
-                System.out.println("10Relocate$*优化后------------------------->" + ants[j].getLength());
+                }*/
+                //System.out.println("10Relocate$*优化后------------------------->" + ants[j].getLength());
                 //logger.info("=========优化解 end==========");
                 /**********优化解 end**********/
+                System.out.println("优化后的解------------------------->" + ants[j].getLength());
                 //3.若𝑅的用车 数等于𝑅∗的用车数, 且𝑅的距离/时间费用小于𝑅∗相 应的费用, 或𝑅的用车数小于𝑅∗的用车数时
-                if ((ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.less(ants[j].getLength(),bestLen)) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
+                if ((ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.less(ants[j].getLength(), bestLen)) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
                     bestAnt = ants[j];
                     bestLen = bestAnt.getLength();
                     bestSolution = bestAnt.getSolution();
-                    /*if (DataUtil.eq(bestLen,828.9368669428337)){
-                        break;
-                    }*/
                     //更新最大最小信息素
                     updateMaxMinPheromone();
-                    /*if (DataUtil.less(bestLen, 829.0)) {
-                        System.out.println("iter---" + i);
-                        System.out.println("bestLen---"+bestLen);
-                        break;
-                    }*/
                 }
                 //更新蚂蚁自身的信息素
                 for (int k1 = 0; k1 < ants[j].getSolution().size(); k1++) {
@@ -165,8 +159,9 @@ public class ACO {
 
                 //baseUpdateStrategy.updateByAntRule2(pheromone, bestAnt);
             }
+            ++RHOCounter;
             //更新信息素
-            baseUpdateStrategy.updateByAntRule1(pheromone, ants,bestAnt);
+            baseUpdateStrategy.updateByAntRule1(pheromone, ants, bestAnt);
             /*System.out.println("The value of pheromone:");
             for (int i1 = 0; i1 < pheromone.length; i1++) {
                 for (int j1 = 0; j1 < pheromone[i1].length; j1++) {
@@ -176,20 +171,34 @@ public class ACO {
             }*/
             //初始化蚁群
             initAntCommunity();
+            //如果三代以内，最优解的变化值在3之内，则更新RHO
+            if (RHOCounter > 3 ){
+                RHOCounter = 0;
+                if (DataUtil.le(pre3Solution.calCost()-bestSolution.calCost(), 3.0)) {
+                    updateRHO();
+                }
+                pre3Solution = bestSolution;
+            }
         }
         //打印最佳结果
         printOptimal();
+    }
+
+    private void updateRHO() {
+        System.out.println("ACO.updateRHO");
+        Parameter.RHO *= 1.05;
+        Parameter.RHO = DataUtil.ge(Parameter.RHO, 1.0) ? 0.99 : Parameter.RHO;
+        System.out.println("RHO--->" + Parameter.RHO);
     }
 
     /**
      * 更新最大最小信息素
      */
     private void updateMaxMinPheromone() {
-        System.out.println("ACO.updateMaxMinPheromone");
         Parameter.PHEROMONE_MAX = calPheromoneMax(bestLen, clientNum);
         Parameter.PHEROMONE_MIN = calPheromoneMin(Parameter.PHEROMONE_MAX);
-        System.out.println("Parameter.PHEROMONE_MAX--->"+calPheromoneMax(bestLen, clientNum));
-        System.out.println("Parameter.PHEROMONE_MIN--->"+calPheromoneMin(Parameter.PHEROMONE_MAX));
+        System.out.println("Parameter.PHEROMONE_MAX--->" + calPheromoneMax(bestLen, clientNum));
+        System.out.println("Parameter.PHEROMONE_MIN--->" + calPheromoneMin(Parameter.PHEROMONE_MAX));
     }
 
     /**
@@ -200,7 +209,7 @@ public class ACO {
      * @return
      */
     private Double calPheromoneMin(Double pheromoneMax) {
-        return pheromoneMax / 200;
+        return pheromoneMax / Parameter.pheSpan;
     }
 
     /**

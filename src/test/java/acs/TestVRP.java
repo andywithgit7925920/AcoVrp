@@ -1,7 +1,7 @@
 package acs;
 
 import org.junit.Test;
-import vrp.Parameter;
+import parameter.Parameter;
 import vrp.Solution;
 import vrp.Truck;
 import vrp.VRP;
@@ -15,8 +15,8 @@ import java.util.LinkedList;
 public class TestVRP {
     @Test
     public void test() throws IOException {
-        VRP.importDataFromSolomon(Parameter.filePathPage);
-        Truck truck1 = new Truck(1);
+        VRP.importDataFromSolomon(Parameter.FILE_PATH_SOLOMON);
+        /*Truck truck1 = new Truck(1);
         LinkedList<Integer> customers1 = new LinkedList<Integer>();
         customers1.add(3);
         customers1.add(9);
@@ -39,7 +39,7 @@ public class TestVRP {
         solution.getTruckSols().add(truck2);
         solution.getTruckSols().add(truck3);
         System.out.println("cost--->"+solution.calCost());
-        System.out.println("solution--->"+solution);
+        System.out.println("solution--->"+solution);*/
 
     }
 }

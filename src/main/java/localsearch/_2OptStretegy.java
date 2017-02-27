@@ -16,6 +16,33 @@ public class _2OptStretegy implements BaseStretegy {
      * @param preSolution
      * @return
      */
+    /*public void updateSolution(Solution preSolution) {
+        //System.out.println("_2OptStretegy.updateSolution begin");
+        if (preSolution == null || preSolution.getTruckSols() == null)
+            return;
+        LinkedList<Truck> truckSols = preSolution.getTruckSols();
+        for (int i = 0; i < truckSols.size(); i++) {
+            Truck truck = truckSols.get(i);
+            LinkedList<Integer> customers = truck.getCustomers();
+            double bestCost = truck.calCost();
+            Truck newTruck;
+            double newCost;
+            for (int j = 0; j < customers.size() - 1; j++) {
+                for (int k = j + 1; k < customers.size(); k++) {
+                    newTruck = _2OptSwap(truck, j, k);
+                    if (newTruck.isGoodTruckForHard()) {
+                        newCost = newTruck.calCost();
+                        if (newCost < bestCost) {
+                            truckSols.remove(i);
+                            newTruck.refreshNowCap();
+                            truckSols.add(i, newTruck);
+                        }
+                    }
+                }
+            }
+        }
+        //System.out.println("_2OptStretegy.updateSolution end");
+    }*/
     public void updateSolution(Solution preSolution) {
         //System.out.println("_2OptStretegy.updateSolution begin");
         if (preSolution == null || preSolution.getTruckSols() == null)

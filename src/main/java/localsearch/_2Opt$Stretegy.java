@@ -31,24 +31,27 @@ public class _2Opt$Stretegy implements BaseStretegy {
             Truck[] truckMap = new Truck[2];
             double maxSpan = Double.MIN_VALUE;
             //与其余组中的进行比较
-            for (int j = i + 1, len2 = truckSols.size(); j < len2; j++) {
-                Truck compareTruck = truckSols.get(j);
-                //System.out.println("比较车辆--->" + j);
-                //当前组中的每一个点
-                for (int k = 0; k < nowTruck.size(); k++) {
-                    //System.out.println("当前车辆交换点k--->" + k);
-                    //其余组中的每一个点
-                    for (int m = 0; m < compareTruck.size(); m++) {
-                        //System.out.println("比较车辆交换点m--->" + m);
-                        double tempCost = calCost(nowTruck, compareTruck, k, m);
-                        if (DataUtil.more(tempCost, 0.0)) {
-                            //System.out.println("==DataUtil.more(tempCost, 0.0)==");
-                            if (DataUtil.more(tempCost, maxSpan)) {
-                                //System.out.println("==DataUtil.more(tempCost, MAX_SPAN)==");
-                                //交换
-                                _2Opt$Swap(nowTruck, compareTruck, k, m);
-                                if (!nowTruck.isOverLoad() && !compareTruck.isOverLoad()) {
-                                    if (!nowTruck.isOverTimeForHard() && !compareTruck.isOverTimeForHard()) {
+            /*for (int j=0,len2=truckSols;j<len2;j++){*/
+            for (int j = 0, len2 = truckSols.size(); j < len2; j++) {
+                if (i != j) {
+                    Truck compareTruck = truckSols.get(j);
+                    //System.out.println("比较车辆--->" + j);
+                    //当前组中的每一个点
+                    for (int k = 0; k < nowTruck.size(); k++) {
+                        //System.out.println("当前车辆交换点k--->" + k);
+                        //其余组中的每一个点
+                        for (int m = 0; m < compareTruck.size(); m++) {
+                            //System.out.println("比较车辆交换点m--->" + m);
+                            double preCost = nowTruck.calCost() + compareTruck.calCost();
+                            _2Opt$Swap(nowTruck, compareTruck, k, m);
+                            double postCost = nowTruck.calCost() + compareTruck.calCost();
+                            double tempCost = preCost - postCost;
+                            if (DataUtil.more(tempCost, 0.0)) {
+                                //System.out.println("==DataUtil.more(tempCost, 0.0)==");
+                                if (DataUtil.more(tempCost, maxSpan)) {
+                                    //System.out.println("==DataUtil.more(tempCost, MAX_SPAN)==");
+                                    //交换
+                                    if (nowTruck.isGoodTruck() && compareTruck.isGoodTruck()) {
                                     /*System.out.println("============================");
                                     System.out.println("交换后的车辆未超载");
                                     System.out.println("==!nowTruck.isOverLoad() && !compareTruck.isOverLoad()==");
@@ -65,14 +68,13 @@ public class _2Opt$Stretegy implements BaseStretegy {
                                         //System.out.println("============================");
                                     }
                                 }
-                                _2Opt$Swap(nowTruck, compareTruck, k, m);
                             }
+                            _2Opt$Swap(nowTruck, compareTruck, k, m);
                         }
                     }
                 }
             }
             //当前组交换的最大值
-
             if (truckMap[0] != null && truckMap[1] != null && nodesMap[0] != null && nodesMap[1] != null) {
                 /*System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("maxSpan--->"+maxSpan);
@@ -84,9 +86,7 @@ public class _2Opt$Stretegy implements BaseStretegy {
                 System.out.println("nodesMap[1]-->" + nodesMap[1]);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!");*/
             }
-
         }
-
     }
 
 

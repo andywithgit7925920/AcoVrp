@@ -1,6 +1,6 @@
 package localsearch;
 
-import vrp.Parameter;
+import parameter.Parameter;
 import vrp.Solution;
 import vrp.Truck;
 import vrp.VRP;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 public class Test {
     @org.junit.Test
     public void test() throws Exception {
-        VRP.importDataFromSolomon(Parameter.filePathPage);
+        VRP.importDataFromSolomon(Parameter.FILE_PATH_PAGE);
 
         LinkedList<Truck> truckSols = new LinkedList<Truck>();
         LinkedList<Integer> customers1 = new LinkedList<Integer>();

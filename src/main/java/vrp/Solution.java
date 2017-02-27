@@ -28,7 +28,7 @@ public class Solution implements Serializable {
         currentTruck = firstTruck;
     }
 
-    public Solution(LinkedList<Truck> truckSols){
+    public Solution(LinkedList<Truck> truckSols) {
         this.truckSols = truckSols;
     }
 
@@ -37,9 +37,9 @@ public class Solution implements Serializable {
      *
      * @return
      */
-    public boolean isGoodSolution() {
+    public boolean isGoodSolutionForHard() {
         for (Truck truck : truckSols) {
-            if (!truck.isGoodTruck())
+            if (!truck.isGoodTruckForHard())
                 return false;
         }
         return true;
@@ -95,6 +95,31 @@ public class Solution implements Serializable {
     }
 
     /**
+     * 计算一个解的总花费
+     *
+     * @return
+     */
+    public double calCostWithTWPunish() {
+        double cost = 0;
+        if (truckSols.size() > 0) {
+            for (Truck truck : truckSols) {
+                cost += truck.calCostWithTWPunish();
+            }
+        }
+        return cost;
+    }
+
+    public double calTWPunishCost(){
+        double penty = 0;
+        if (truckSols.size() > 0) {
+            for (Truck truck : truckSols) {
+                penty += truck.calTWPunishCost();
+            }
+        }
+        return penty;
+    }
+
+    /**
      * 返回解中路径数量
      *
      * @return
@@ -142,7 +167,7 @@ public class Solution implements Serializable {
         if (truckSols.size() > 0) {
             for (Truck truck : truckSols) {
                 if (truck.isOverLoad()) {
-                    System.out.println("overLoadTruck--->"+truck);
+                    //System.out.println("overLoadTruck--->" + truck);
                     ++count;
                 }
             }
@@ -162,7 +187,7 @@ public class Solution implements Serializable {
         if (truckSols.size() > 0) {
             for (Truck truck : truckSols) {
                 if (truck.isOverTimeForHard()) {
-                    System.out.println("overTimeTruck--->"+truck);
+                    //System.out.println("overTimeTruck--->" + truck);
                     ++count;
                 }
             }
@@ -238,23 +263,24 @@ public class Solution implements Serializable {
     public String toString() {
         getOverLoadCount();
         getOverTimeCount();
-        isGoodSolution = isGoodSolution();
+        isGoodSolution = isGoodSolutionForHard();
         return "Solution{" +
                 "truckSols=" + truckSols +
                 ", overLoadCount=" + overLoadCount +
                 ", overTimeCount=" + overTimeCount +
-                ", isGoodSolution=" + isGoodSolution +
+                ", isGoodSolutionForHard=" + isGoodSolution +
                 '}';
     }
 
     /**
      * 复制
+     *
      * @return
      */
-    public Solution clone(){
+    public Solution clone() {
         Solution cloneSolution = new Solution();
         LinkedList<Truck> cloneTruckSols = new LinkedList<Truck>();
-        for (Truck truck : truckSols){
+        for (Truck truck : truckSols) {
             cloneTruckSols.add(truck.clone());
         }
         cloneSolution.setTruckSols(cloneTruckSols);
@@ -267,9 +293,9 @@ public class Solution implements Serializable {
     public void refresh() {
         //System.out.println("Solution.refresh");
         Iterator<Truck> it = truckSols.iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             Truck truck = it.next();
-            if (truck.isEmpty()){
+            if (truck.isEmpty()) {
                 it.remove();
             }
         }

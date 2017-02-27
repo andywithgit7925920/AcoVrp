@@ -1,13 +1,10 @@
 package acs;
 
-import util.ArrayUtil;
 import util.DataUtil;
-import util.LogUtil;
 import vrp.Solution;
 import vrp.Truck;
 
-import static util.LogUtil.*;
-import static vrp.Parameter.*;
+import static parameter.Parameter.*;
 import static vrp.VRP.*;
 
 import java.util.*;
@@ -49,7 +46,6 @@ public class Ant {
      */
     public void selectNextClient(double[][] pheromone) {
         //logger.info("ant .. selectNextClient...begin");
-
         //allowedClientFilter();
         double[] p = new double[clientNum];
         double sum = 0.0;
@@ -61,7 +57,14 @@ public class Ant {
             if (allowedClient[i] == 1) {
                 double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
                 waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
-                sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA) * Math.pow(1.0 / time[i][2], GAMMA) * Math.pow(1.0 / waitTime, Delta);
+                double saved = savedQnuantity[currentCus][i];
+                saved = (DataUtil.le(saved, 0.0)) ? 1 : saved;
+                sum += Math.pow(pheromone[currentCus][i], ALPHA)
+                        * Math.pow(1.0 / distance[currentCus][i], BETA)
+                        * Math.pow(1.0 / time[i][2], GAMMA)
+                        * Math.pow(1.0 / waitTime, DELTA)
+                        * Math.pow(saved, MU);
+
                 //sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
             }
         }
@@ -70,10 +73,14 @@ public class Ant {
             if (allowedClient[i] == 1) {
                 double waitTime = time[i][0] - (currTruck.calNowServiceTime() + distance[currentCus][i]);
                 waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
+                double saved = savedQnuantity[currentCus][i];
+                saved = (DataUtil.le(saved, 0.0)) ? 1 : saved;
                 p[i] = Math.pow(pheromone[currentCus][i], ALPHA)
                         * Math.pow(1.0 / distance[currentCus][i], BETA)
                         * Math.pow(1.0 / time[i][2], GAMMA)
-                        * Math.pow(1.0 / waitTime, Delta) / sum;
+                        * Math.pow(1.0 / waitTime, DELTA)
+                        * Math.pow(saved, MU) / sum;
+                //System.out.println("saved--->" + saved);
                 //p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA)/sum;
                 /*System.out.println("pheromone[currentCus][i]--->" + pheromone[currentCus][i]);
                 System.out.println("Math.pow(pheromone[currentCus][i], ALPHA) --->" + Math.pow(pheromone[currentCus][i], ALPHA));
@@ -82,7 +89,7 @@ public class Ant {
                 System.out.println("time[i][2]--->" + time[i][2]);
                 System.out.println("Math.pow(1.0 / time[i][2], GAMMA)--->" + Math.pow(1.0 / time[i][2], GAMMA));
                 System.out.println("waitTime--->" + waitTime);
-                System.out.println("Math.pow(1.0 / waitTime, Delta) --->" + Math.pow(1.0 / waitTime, Delta));
+                System.out.println("Math.pow(1.0 / waitTime, DELTA) --->" + Math.pow(1.0 / waitTime, DELTA));
                 System.out.println("p[i]--->" + p[i]);*/
             } else {
                 p[i] = 0.0;
@@ -243,22 +250,32 @@ public class Ant {
         return true;
     }
 
-    /**
-     * 计算路径总长度
-     *
-     * @return
-     */
-    private double calculateTourLength() {
-        return solution.calCost();
-    }
 
     /**
-     * get total length
+     * 获得路径长度
      *
      * @return
      */
     public double getLength() {
-        return calculateTourLength();
+        return solution.calCost();
+    }
+
+    /**
+     * 计算总花费
+     *
+     * @return
+     */
+    public double getLengthWithTWPunish() {
+        return solution.calCostWithTWPunish();
+    }
+
+    /**
+     * 计算惩罚代价
+     *
+     * @return
+     */
+    public double getTWPunishLength() {
+        return solution.calTWPunishCost();
     }
 
 

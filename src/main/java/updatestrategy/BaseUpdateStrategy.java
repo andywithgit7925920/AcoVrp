@@ -2,7 +2,7 @@ package updatestrategy;
 
 import acs.Ant;
 import util.DataUtil;
-import vrp.Parameter;
+import parameter.Parameter;
 import vrp.Solution;
 
 import static vrp.VRP.*;
@@ -68,6 +68,12 @@ public abstract class BaseUpdateStrategy {
         }
     }
 
+    /**
+     * 按照策略一更新种群以及最优蚂蚁的信息素
+     * @param pheromone
+     * @param ants
+     * @param bestAnt
+     */
     public void updateByAntRule1(double[][] pheromone, Ant[] ants,Ant bestAnt) {
         //System.out.println("BaseUpdateStrategy.update");
         //信息素挥发
