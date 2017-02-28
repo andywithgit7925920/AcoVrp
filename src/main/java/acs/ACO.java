@@ -44,6 +44,7 @@ public class ACO {
                 //导入数据
                 //importDataFromAVRP(FILE_PATH);
                 importDataFromSolomon(filePath);
+                System.out.println("fileName---"+fileName);
                 //初始化信息素矩阵
                 pheromone = new double[clientNum][clientNum];
                 for (int i = 0; i < clientNum; i++) {
@@ -82,7 +83,7 @@ public class ACO {
         Solution pre3Solution = null;
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
-            System.out.println("ITER_NUM:" + i);
+            //System.out.println("ITER_NUM:" + i);
             //对于每一只蚂蚁
             for (int j = 0; j < antNum; j++) {
                 //logger.info("第" + j + "只蚂蚁开始");
@@ -116,7 +117,7 @@ public class ACO {
                 //logger.info("优化前--------------------------------------------------------->" + ants[j].getLength());
                 /**********优化解 begin**********/
                 //logger.info("=========优化解 begin==========");
-                /*setStretegy(new _2OptStretegy());
+                setStretegy(new _2OptStretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
                 }
@@ -124,21 +125,21 @@ public class ACO {
                 setStretegy(new _10RelocateStretegy());
                 for (int m = 0; m < 3; m++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }*/
+                }
                 //System.out.println("10relocate优化后-------------------------------->" + ants[j].getLength());
-                /*setStretegy(new _2Opt$Stretegy());
+                setStretegy(new _2Opt$Stretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }*/
+                }
                 //System.out.println("2opt*优化后------------------------->" + ants[j].getLength());
-                /*setStretegy(new _10Relocate$Stretegy());
+                setStretegy(new _10Relocate$Stretegy());
                 for (int k = 0; k < 5; k++) {
                     stretegy.updateSolution(ants[j].getSolution());
-                }*/
+                }
                 //System.out.println("10Relocate$*优化后------------------------->" + ants[j].getLength());
                 //logger.info("=========优化解 end==========");
                 /**********优化解 end**********/
-                System.out.println("优化后的解------------------------->" + ants[j].getLength());
+                //System.out.println("优化后的解------------------------->" + ants[j].getLength());
                 //3.若𝑅的用车 数等于𝑅∗的用车数, 且𝑅的距离/时间费用小于𝑅∗相 应的费用, 或𝑅的用车数小于𝑅∗的用车数时
                 if ((ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.less(ants[j].getLength(), bestLen)) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
                     bestAnt = ants[j];
@@ -185,10 +186,10 @@ public class ACO {
     }
 
     private void updateRHO() {
-        System.out.println("ACO.updateRHO");
+        //System.out.println("ACO.updateRHO");
         Parameter.RHO *= 1.05;
         Parameter.RHO = DataUtil.ge(Parameter.RHO, 1.0) ? 0.99 : Parameter.RHO;
-        System.out.println("RHO--->" + Parameter.RHO);
+        //System.out.println("RHO--->" + Parameter.RHO);
     }
 
     /**
@@ -197,8 +198,8 @@ public class ACO {
     private void updateMaxMinPheromone() {
         Parameter.PHEROMONE_MAX = calPheromoneMax(bestLen, clientNum);
         Parameter.PHEROMONE_MIN = calPheromoneMin(Parameter.PHEROMONE_MAX);
-        System.out.println("Parameter.PHEROMONE_MAX--->" + calPheromoneMax(bestLen, clientNum));
-        System.out.println("Parameter.PHEROMONE_MIN--->" + calPheromoneMin(Parameter.PHEROMONE_MAX));
+        //System.out.println("Parameter.PHEROMONE_MAX--->" + calPheromoneMax(bestLen, clientNum));
+        //System.out.println("Parameter.PHEROMONE_MIN--->" + calPheromoneMin(Parameter.PHEROMONE_MAX));
     }
 
     /**
@@ -232,13 +233,13 @@ public class ACO {
         System.out.println("The optimal length is: " + bestLen);
         System.out.println("The optimal tour is: ");
         System.out.println(bestSolution);
-        System.out.println("The value of pheromone:");
+        /*System.out.println("The value of pheromone:");
         for (int i = 0; i < pheromone.length; i++) {
             for (int j = 0; j < pheromone[i].length; j++) {
                 System.out.print(pheromone[i][j] + "\t");
             }
             System.out.print("\n");
-        }
+        }*/
     }
 
     public void setBaseUpdateStrategy(BaseUpdateStrategy baseUpdateStrategy) {

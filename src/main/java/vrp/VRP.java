@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class VRP {
     /******待读取信息******/
     /***********vrp***********/
+    public static String fileName;  //文件名
     public static Integer clientNum;    //顾客数量
     public static Integer capacity;     //货车容量
     public static double[][] distance;  //距离矩阵
@@ -98,6 +99,9 @@ public class VRP {
         String line;
         boolean flag4InformationSection = false;
         while (!"EOF".equals((line = reader.readLine()).trim())) {
+            if (line.startsWith("NAME")){
+                fileName=line.substring(7);
+            }
             if (line.startsWith("DIMENSION")) {
                 clientNum = 1 + Integer.valueOf(line.substring(12));
                 clientDemandArr = new double[clientNum];
@@ -105,13 +109,13 @@ public class VRP {
                 x_Axis = new Double[clientNum];
                 y_Axis = new Double[clientNum];
                 time = new double[clientNum][3];
-                System.out.println("clientNum--->" + clientNum);
+                //System.out.println("clientNum--->" + clientNum);
             }
             if (line.startsWith("CAPACITY")) {
                 capacity = Integer.valueOf(line.substring(11));
                 //将值直接赋给truck
                 Truck.capacity = capacity;
-                System.out.println("capacity--->" + capacity);
+                //System.out.println("capacity--->" + capacity);
             }
             if (line.startsWith("INFORMATION")) {
                 flag4InformationSection = !flag4InformationSection;
@@ -167,20 +171,21 @@ public class VRP {
             }
         }
         //开始打印数据
-        System.out.println("=========clientDemandArr===========");
-        ArrayUtil.printArr(clientDemandArr);
-        System.out.println("=========serviceTime===========");
-        ArrayUtil.printArr(serviceTime);
-        System.out.println("=========time===========");
-        for (int i = 0; i < time.length; i++) {
+        //System.out.println("=========clientDemandArr===========");
+        //ArrayUtil.printArr(clientDemandArr);
+        //System.out.println("=========serviceTime===========");
+        //ArrayUtil.printArr(serviceTime);
+        //System.out.println("=========time===========");
+        /*for (int i = 0; i < time.length; i++) {
             for (int j = 0; j < time[i].length; j++) {
                 System.out.print(time[i][j] + " ");
             }
             System.out.print("\n");
-        }
-        System.out.println("=========distance===========");
+        }*/
+        /*System.out.println("=========distance===========");
         MatrixUtil.printMatrix(distance);
         System.out.println("=========savedQnuantity===========");
-        MatrixUtil.printMatrix(savedQnuantity);
+        MatrixUtil.printMatrix(savedQnuantity);*/
+        //System.out.println("读入数据完毕");
     }
 }

@@ -1,0 +1,18 @@
+To understand what happens during the shuffle we can consider the example
+of the reduceByKey operation. The reduceByKey operation generates a new RDD
+where all values for a single key are combined into a tuple - the key and
+the result of executing a reduce function against all values associated with
+that key. The challenge is that not all values for a single key necessarily
+reside on the same partition, or even the same machine, but they must be
+co-located to compute the result.
+In Spark, data is generally not distributed across partitions to be in the
+necessary place for a specific operation. During computations, a single
+task will operate on a single partition - thus, to organize all the data
+for a single reduceByKey reduce task to execute, Spark needs to perform
+an all-to-all operation. It must read from all partitions to find all
+the values for all keys, and then bring together values across partitions
+to compute the final result for each key - this is called the shuffle.
+Although the set of elements in each partition of newly shuffled data will
+ be deterministic, and so is the ordering of partitions themselves,
+ the ordering of these elements is not. If one desires predictably ordered
+  data following shuffle then it’s possible to use:

@@ -6,7 +6,7 @@ package parameter;
 public class Parameter {
     /****文件相关****/
     public static final String FILE_PATH = "benchmark\\A-VRP\\A-n33-k5.vrp";
-    public static final String FILE_PATH_SOLOMON = "benchmark\\solomon\\C101.vrp";
+    public static final String FILE_PATH_SOLOMON = "benchmark\\solomon\\C102.vrp";
     public static final String FILE_PATH_PAGE = "benchmark\\page5\\vrp10.vrp";
     /****文件相关****/
     /****蚁群算法相关****/
@@ -17,9 +17,9 @@ public class Parameter {
     public static final double DELTA = 2.0; //等待时间影响因子
     public static final double MU = 3.0;    //节约量影响因子
     /**影响因子**/
-    public static double RHO = 0.5;   //信息素挥发率
-    public static final Integer ANT_NUM = 10;    //蚂蚁数量
-    public static final Integer ITER_NUM = 200;     //迭代数
+    public static double RHO = 0.8;   //信息素挥发率
+    public static final Integer ANT_NUM = 20;    //蚂蚁数量
+    public static final Integer ITER_NUM = 500;     //迭代数
     public static final double R0 = 0.5;    //用来控制转移规则的参数
     public static final double PHEROMONE_INIT = 1.0;    //信息素的初始值
     public static double PHEROMONE_MAX = 5.0;       //信息素最大值
