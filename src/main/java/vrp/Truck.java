@@ -1,6 +1,7 @@
 package vrp;
 
 import parameter.Parameter;
+import scala.Serializable;
 import util.DataUtil;
 
 import java.util.LinkedList;
@@ -12,7 +13,8 @@ import static vrp.VRP.*;
  * Created by ab792 on 2017/1/18.
  * 卡车类，代表了一条路径
  */
-public class Truck {
+public class Truck implements Serializable{
+    private static final long serialVersionUID = -1755642829659075970L;
     private int id;
     //private double capacity;    //载重量
     private double nowCapacity; //当前载重量

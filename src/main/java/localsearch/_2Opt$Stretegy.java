@@ -131,7 +131,7 @@ public class _2Opt$Stretegy implements BaseStretegy {
      * @param indexJ
      * @return
      */
-    public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
+    /*public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
         if (truck1 == null || truck2 == null || truck1.getCustomers().size() <= indexI || truck2.getCustomers().size() <= indexJ)
             throw new Exception("input invalid!");
         LinkedList<Integer> customers1 = truck1.getCustomers();
@@ -141,6 +141,6 @@ public class _2Opt$Stretegy implements BaseStretegy {
         double cost1 = distance[index11][index12] + distance[index21][index22];
         double cost2 = distance[index11][index22] + distance[index21][index12];
         return cost1 - cost2;
-    }
+    }*/
 
 }

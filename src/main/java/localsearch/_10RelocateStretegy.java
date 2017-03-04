@@ -65,7 +65,7 @@ public class _10RelocateStretegy implements BaseStretegy {
         }
     }*/
 
-    public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
+    /*public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
         if (truck1 == null || truck2 == null || truck1.getCustomers().size() <= indexI || truck2.getCustomers().size() <= indexJ)
             throw new Exception("input invalid!");
         LinkedList<Integer> customers = truck1.getCustomers();
@@ -78,7 +78,7 @@ public class _10RelocateStretegy implements BaseStretegy {
         int insertPointPost = (indexJ + 1 == customers.size()) ? 0 : customers.get(++indexJ);
         return distance[strippedPointPre][strippedPoint] + distance[strippedPoint][strippedPointPost] + distance[insertPoint][insertPointPost]
                 - distance[strippedPointPre][strippedPointPost] - distance[insertPoint][strippedPoint] - distance[strippedPoint][insertPointPost];
-    }
+    }*/
 
     public Truck  insert(Truck truck, int indexI, int indexJ) throws Exception {
         if (truck == null || truck.getCustomers().size() <= indexI)

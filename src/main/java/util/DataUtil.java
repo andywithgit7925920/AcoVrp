@@ -10,6 +10,8 @@ import java.util.LinkedList;
  * 数据的一些常用方法
  */
 public class DataUtil {
+    private DataUtil() {
+    }
 
     /**
      * double小于

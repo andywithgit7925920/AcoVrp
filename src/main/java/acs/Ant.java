@@ -1,5 +1,8 @@
 package acs;
 
+import parameter.Parameter;
+import scala.Serializable;
+import static util.ArrayUtil.*;
 import util.DataUtil;
 import vrp.Solution;
 import vrp.Truck;
@@ -12,7 +15,8 @@ import java.util.*;
 /**
  * Created by ab792 on 2016/12/30.
  */
-public class Ant {
+public class Ant implements Serializable {
+    private static final long serialVersionUID = -6878808733419080363L;
     private Solution solution;
     private int[] allowedClient;  //允许访问的城市
     private int[] visitedClient;    //取值0或1，1表示已经访问过，0表示未访问过
@@ -30,28 +34,32 @@ public class Ant {
      * @param
      */
     public void init() {
-        //logger.info("ant .. init...begin");
         //将蚂蚁初始化在出发站
         visitedClient = new int[clientNum];
         //默认开始从起始点出发
         visitedClient[0] = 1;
-        initAllowClient2One(allowedClient);
-        //logger.info("ant .. init...end");
+        initIntegerArray2One(allowedClient);
     }
 
+    /**
+     * 蚂蚁搜寻一条路径
+     * @param pheromone
+     */
+    public void traceRoad(double[][] pheromone){
+        while (!visitFinish()) {
+            selectNextClient(pheromone);
+        }
+    }
     /**
      * 选择下一个城市
      *
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-        //logger.info("ant .. selectNextClient...begin");
-        //allowedClientFilter();
         double[] p = new double[clientNum];
         double sum = 0.0;
         Truck currTruck = solution.getCurrentTruck();
         int currentCus = currTruck.getCurrentCus();
-        //logger.info("currentCus---" + currentCus);
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
@@ -64,8 +72,6 @@ public class Ant {
                         * Math.pow(1.0 / time[i][2], GAMMA)
                         * Math.pow(1.0 / waitTime, DELTA)
                         * Math.pow(saved, MU);
-
-                //sum += Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA);
             }
         }
         //计算概率矩阵
@@ -80,55 +86,28 @@ public class Ant {
                         * Math.pow(1.0 / time[i][2], GAMMA)
                         * Math.pow(1.0 / waitTime, DELTA)
                         * Math.pow(saved, MU) / sum;
-                //System.out.println("saved--->" + saved);
-                //p[i] = Math.pow(pheromone[currentCus][i], ALPHA) * Math.pow(1.0 / distance[currentCus][i], BETA)/sum;
-                /*System.out.println("pheromone[currentCus][i]--->" + pheromone[currentCus][i]);
-                System.out.println("Math.pow(pheromone[currentCus][i], ALPHA) --->" + Math.pow(pheromone[currentCus][i], ALPHA));
-                System.out.println("1.0 / distance[currentCus][i]--->" + 1.0 / distance[currentCus][i]);
-                System.out.println("Math.pow(1.0 / distance[currentCus][i], BETA)--->" + Math.pow(1.0 / distance[currentCus][i], BETA));
-                System.out.println("time[i][2]--->" + time[i][2]);
-                System.out.println("Math.pow(1.0 / time[i][2], GAMMA)--->" + Math.pow(1.0 / time[i][2], GAMMA));
-                System.out.println("waitTime--->" + waitTime);
-                System.out.println("Math.pow(1.0 / waitTime, DELTA) --->" + Math.pow(1.0 / waitTime, DELTA));
-                System.out.println("p[i]--->" + p[i]);*/
             } else {
                 p[i] = 0.0;
             }
         }
-        //logger.info("sum---" + sum);
-        //System.out.println("=========p===========");
-        //ArrayUtil.printArr(p);
         //轮盘赌选择下一个城市
         double R = Math.random();
-        //logger.info("R---" + R);
         int selectedClient;
         if (R <= R0) {
-            //System.out.println("-----rule1-----");
             selectedClient = stateTransferRule1(p);
         } else {
-            //System.out.println("-----rule2-----");
             selectedClient = stateTransferRule2(p, R);
         }
-        //System.out.println("selectedClient---" + selectedClient);
         //从允许选择的城市中去除selectClient
         visitedClient[selectedClient] = 1;
         allowedClient[selectedClient] = 0;
-        /*logger.info("allowedClient---");
-        ArrayUtil.printArr(allowedClient);
-        logger.info("visitedClient---");
-        ArrayUtil.printArr(visitedClient);*/
         //将当前城市加入solution中
         solution.addCus(selectedClient);
         allowedClientFilter();
-        /*logger.info("allowedClient---");
-        ArrayUtil.printArr(allowedClient);
-        logger.info("visitedClient---");
-        ArrayUtil.printArr(visitedClient);*/
         //如果当前已经走完一个循环,如果allowedClient只包含0点，则进入下一循环
         if ((OnlyContainsDeposit(allowedClient) && !visitFinish())) {
-            //System.out.println("走完一个循环");
             solution.increaseLoop();
-            initAllowClient2Zero(allowedClient);
+            initIntegerArray2Zero(allowedClient);
             //重新计算允许访问的客户
             for (int i = 1; i < visitedClient.length; i++) {
                 if (visitedClient[i] == 0) {
@@ -136,7 +115,6 @@ public class Ant {
                 }
             }
         }
-        //logger.info("ant .. selectNextClient...end");
     }
 
     /**
@@ -193,33 +171,6 @@ public class Ant {
         return index;
     }
 
-
-    /**
-     * 将允许访问的城市置为0
-     *
-     * @param allowedClient
-     */
-    private static void initAllowClient2Zero(int[] allowedClient) {
-        if (allowedClient != null && allowedClient.length > 0) {
-            for (int i = 0, len = allowedClient.length; i < len; i++) {
-                allowedClient[i] = 0;
-            }
-        }
-    }
-
-    /**
-     * 将允许访问的城市置为1
-     *
-     * @param allowedClient
-     */
-    private void initAllowClient2One(int[] allowedClient) {
-        if (allowedClient != null && allowedClient.length > 0) {
-            for (int i = 1, len = allowedClient.length; i < len; i++) {
-                allowedClient[i] = 1;
-            }
-        }
-    }
-
     /**
      * 允许访问的城市是否只包含0点
      *
@@ -250,6 +201,19 @@ public class Ant {
         return true;
     }
 
+    /**
+     * 通过自身的解更新信息素
+     */
+    public void updatePheromone() {
+        for (int k1 = 0; k1 < getSolution().size(); k1++) {
+            getDelta()[0][getSolution().getTruckSols().get(k1).getCustomers().get(0).intValue()] = (Parameter.O / getLength());
+            for (int k2 = 0, len2 = getSolution().getTruckSols().get(k1).size(); k2 + 1 < len2; k2++) {
+                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()] = (Parameter.O / getLength());
+                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()] = (Parameter.O / getLength());
+            }
+            getDelta()[getSolution().getTruckSols().get(k1).size() - 1][0] = (Parameter.O / getLength());
+        }
+    }
 
     /**
      * 获得路径长度
@@ -269,6 +233,7 @@ public class Ant {
         return solution.calCostWithTWPunish();
     }
 
+
     /**
      * 计算惩罚代价
      *
@@ -278,15 +243,14 @@ public class Ant {
         return solution.calTWPunishCost();
     }
 
-
     public int[] getVisitedClient() {
         return visitedClient;
     }
 
+
     public Integer getCapacity() {
         return capacity;
     }
-
 
     public double[][] getDelta() {
         return delta;

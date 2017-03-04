@@ -71,9 +71,9 @@ public class _2OptStretegy implements BaseStretegy {
         //System.out.println("_2OptStretegy.updateSolution end");
     }
 
-    public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
+    /*public double calCost(Truck truck1, Truck truck2, int indexI, int indexJ) throws Exception {
         return 0.0;
-    }
+    }*/
 
     /**
      * 对一条路径在indexI、indexJ上进行2-opt交换

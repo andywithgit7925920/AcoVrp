@@ -32,7 +32,8 @@ public class TestACO {
         org.apache.log4j.LogManager.resetConfiguration();
         org.apache.log4j.PropertyConfigurator.configure("C:\\Users\\ab792\\IdeaProjects\\AcoVrp\\src\\log4j.properties");
 
-        String[] arr = {"C102","C103","C104","C109"};
+        //String[] arr = {"C102","C103","C104","C109"};
+        String[] arr = {"C102"};
         for (String item : arr){
             String fileName = "benchmark\\solomon\\"+item+".vrp";
             ACO aco = new ACO();

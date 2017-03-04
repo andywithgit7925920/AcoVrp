@@ -1,6 +1,7 @@
 package vrp;
 
-import java.io.Serializable;
+import scala.Serializable;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -9,6 +10,8 @@ import java.util.LinkedList;
  * 代表一个完整的解
  */
 public class Solution implements Serializable {
+
+    private static final long serialVersionUID = 7857219508124941801L;
     private LinkedList<Truck> truckSols = new LinkedList<Truck>(); //卡车集合(路径集合)
     private double cost;    //整个解的代价
     private double realCost;    //扣掉truck penalty后的cost

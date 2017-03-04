@@ -5,6 +5,9 @@ package util;
  */
 public class StringUtil {
 
+    private StringUtil() {
+    }
+
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
     }

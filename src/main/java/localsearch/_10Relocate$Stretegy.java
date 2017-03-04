@@ -82,7 +82,7 @@ public class _10Relocate$Stretegy implements BaseStretegy {
         //System.out.println("preSolution post--->"+preSolution);
     }
 
-    public double calCost(Truck truck1, Truck truck2, int customerPos, int insertIndex) throws Exception {
+    /*public double calCost(Truck truck1, Truck truck2, int customerPos, int insertIndex) throws Exception {
         if (truck1 == null || truck2 == null || customerPos < 0 || insertIndex < 0)
             throw new Exception("input invalid!");
         LinkedList<Integer> customers1 = truck1.getCustomers();
@@ -112,7 +112,7 @@ public class _10Relocate$Stretegy implements BaseStretegy {
             cost2 -= distance[point][postInsertPoint];
         }
         return cost1 - cost2;
-    }
+    }*/
 
 
     public static void insert(Truck truck1, Truck truck2, int customerPos, int insertIndex) throws Exception {
