@@ -1,5 +1,6 @@
 package sparklaunch;
 import acs.ACO;
+import localsearch.DefaultStretegy;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.JavaRDD;
@@ -15,19 +16,19 @@ import static parameter.Parameter.*;
  */
 public class Launch {
     public static void main(String[] args) throws Exception {
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext ctx = new JavaSparkContext(conf);
+        //SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
+        //JavaSparkContext ctx = new JavaSparkContext(conf);
         String fileName = "benchmark\\solomon\\C102.vrp";
-        System.out.println(ctx.getSparkHome());
-        ACO aco = new ACO(ctx);
+        //System.out.println(ctx.getSparkHome());
+        ACO aco = new ACO();
         aco.init(fileName); //初始化蚁群
-        ctx.broadcast(VRP.clientNum);
+        /*ctx.broadcast(VRP.clientNum);
         ctx.broadcast(VRP.distance);
-        ctx.broadcast(VRP.clientDemandArr);
+        ctx.broadcast(VRP.clientDemandArr);*/
        // sc.broadcast()
         //创建信息的broadcast
 
-        aco.run();
+        aco.run(new DefaultStretegy());
     }
     /*public static void main(String[] args){
         SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);

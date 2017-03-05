@@ -1,6 +1,7 @@
 package updatestrategy;
 
 import parameter.Parameter;
+import scala.Serializable;
 import vrp.Solution;
 
 /**
@@ -8,7 +9,8 @@ import vrp.Solution;
  * 更新策略1
  * 则将𝑅中所有边上的信息素进行大量蒸发
  */
-public class UpdateStrategy4Case1 extends BaseUpdateStrategy {
+public class UpdateStrategy4Case1 extends BaseUpdateStrategy implements Serializable{
+    private static final long serialVersionUID = 5036970613540384959L;
     public double P = Math.pow(1 - Parameter.RHO, 3);
 
     public void updatePheBySolution(double[][] pheromone, Solution solution) {

@@ -1,6 +1,7 @@
 package acs;
 
 import jdk.management.resource.internal.inst.FileOutputStreamRMHooks;
+import localsearch.DefaultStretegy;
 import org.junit.Test;
 import parameter.Parameter;
 
@@ -20,7 +21,7 @@ public class TestACO {
             String fileName = "benchmark\\solomon\\"+item+".vrp";
             ACO aco = new ACO();
             aco.init(fileName);
-            aco.run();
+            aco.run(new DefaultStretegy());
         }
         /*String filePath = Parameter.FILE_PATH_SOLOMON;
         aco.init(filePath);
@@ -38,7 +39,7 @@ public class TestACO {
             String fileName = "benchmark\\solomon\\"+item+".vrp";
             ACO aco = new ACO();
             aco.init(fileName);
-            aco.run();
+            aco.run(new DefaultStretegy());
         }
         /*String filePath = Parameter.FILE_PATH_SOLOMON;
         aco.init(filePath);

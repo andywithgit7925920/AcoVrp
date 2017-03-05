@@ -1,5 +1,6 @@
 package localsearch;
 
+import acs.Ant;
 import util.ClassCreaterUtil;
 import vrp.Solution;
 
@@ -31,6 +32,7 @@ public interface BaseStretegy {
         doUpdate(_10Relocate$Stretegy::new, solution, 5);
         //System.out.println("10Relocate$*优化后------------------------->" + solution.calCost());
     }
+
 
     default void doUpdate(ClassCreaterUtil classCreater, Solution solution, int times) throws Exception {
         for (int k = 0; k < times; k++) {

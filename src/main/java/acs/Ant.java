@@ -45,10 +45,16 @@ public class Ant implements Serializable {
      * 蚂蚁搜寻一条路径
      * @param pheromone
      */
-    public void traceRoad(double[][] pheromone){
+    /*public void traceRoad(double[][] pheromone){
         while (!visitFinish()) {
             selectNextClient(pheromone);
         }
+    }*/
+    public Ant traceRoad(double[][] pheromone){
+        while (!visitFinish()) {
+            selectNextClient(pheromone);
+        }
+        return this;
     }
     /**
      * 选择下一个城市
