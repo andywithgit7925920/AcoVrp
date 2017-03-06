@@ -19,6 +19,7 @@ public class Launch {
         //SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
         //JavaSparkContext ctx = new JavaSparkContext(conf);
         String fileName = "benchmark\\solomon\\C102.vrp";
+        long time1 = System.currentTimeMillis();
         //System.out.println(ctx.getSparkHome());
         ACO aco = new ACO();
         aco.init(fileName); //初始化蚁群
@@ -27,8 +28,9 @@ public class Launch {
         ctx.broadcast(VRP.clientDemandArr);*/
        // sc.broadcast()
         //创建信息的broadcast
-
         aco.run(new DefaultStretegy());
+        long time2 = System.currentTimeMillis();
+        System.out.println("spend time--->"+(time2-time1));
     }
     /*public static void main(String[] args){
         SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
