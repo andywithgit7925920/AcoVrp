@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AcoVrp.iml" filepath="$PROJECT_DIR$/AcoVrp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aco-core/aco-core.iml" filepath="$PROJECT_DIR$/aco-core/aco-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aco-hadoop/aco-hadoop.iml" filepath="$PROJECT_DIR$/aco-hadoop/aco-hadoop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aco-nondistributed/aco-nondistributed.iml" filepath="$PROJECT_DIR$/aco-nondistributed/aco-nondistributed.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aco-spark/aco-spark.iml" filepath="$PROJECT_DIR$/aco-spark/aco-spark.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>acovrp</artifactId>
+        <groupId>com.xmu.andy.aco</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <groupId>com.xmu.andy.aco.nondistributed</groupId>
+    <artifactId>aco-nondistributed</artifactId>
+    <packaging>jar</packaging>
+    <name>aco-nondistributed</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.xmu.andy.aco.core</groupId>
+            <artifactId>aco-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

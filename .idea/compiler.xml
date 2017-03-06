@@ -22,10 +22,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="AcoVrp" />
+        <module name="aco-core" />
+        <module name="aco-hadoop" />
+        <module name="aco-nondistributed" />
+        <module name="aco-spark" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="aco-core" target="1.8" />
+      <module name="aco-hadoop" target="1.8" />
+      <module name="aco-nondistributed" target="1.8" />
+      <module name="aco-spark" target="1.8" />
       <module name="AcoVrp" target="1.8" />
     </bytecodeTargetLevel>
   </component>
