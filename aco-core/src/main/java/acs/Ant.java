@@ -63,32 +63,36 @@ public class Ant implements Serializable {
         double sum = 0.0;
         Truck currTruck = solution.getCurrentTruck();
         int currentCus = currTruck.getCurrentCus();
+        Map<Integer,Double> map = new HashMap<>(VRP.clientNum);
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
                 double waitTime = VRP.time[i][0] - (currTruck.calNowServiceTime() + VRP.distance[currentCus][i]);
                 waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
                 double saved = VRP.savedQnuantity[currentCus][i];
-                saved = (DataUtil.le(saved, 0.0)) ? 1 : saved;
-                sum += Math.pow(pheromone[currentCus][i], Parameter.ALPHA)
+                saved = (DataUtil.le(saved, 0.0)) ? 0.1 : saved;
+                double temp = Math.pow(pheromone[currentCus][i], Parameter.ALPHA)
                         * Math.pow(1.0 / VRP.distance[currentCus][i], Parameter.BETA)
                         * Math.pow(1.0 / VRP.time[i][2], Parameter.GAMMA)
                         * Math.pow(1.0 / waitTime, Parameter.DELTA)
                         * Math.pow(saved, Parameter.MU);
+                map.put(i,temp);
+                sum += temp;
             }
         }
         //计算概率矩阵
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                double waitTime = VRP.time[i][0] - (currTruck.calNowServiceTime() + VRP.distance[currentCus][i]);
+                /*double waitTime = VRP.time[i][0] - (currTruck.calNowServiceTime() + VRP.distance[currentCus][i]);
                 waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
                 double saved = VRP.savedQnuantity[currentCus][i];
-                saved = (DataUtil.le(saved, 0.0)) ? 1 : saved;
+                saved = (DataUtil.le(saved, 0.0)) ? 0.1 : saved;
                 p[i] = Math.pow(pheromone[currentCus][i], Parameter.ALPHA)
                         * Math.pow(1.0 / VRP.distance[currentCus][i], Parameter.BETA)
                         * Math.pow(1.0 / VRP.time[i][2], Parameter.GAMMA)
                         * Math.pow(1.0 / waitTime, Parameter.DELTA)
-                        * Math.pow(saved, Parameter.MU) / sum;
+                        * Math.pow(saved, Parameter.MU) / sum;*/
+                p[i] = map.get(i)/sum;
             } else {
                 p[i] = 0.0;
             }

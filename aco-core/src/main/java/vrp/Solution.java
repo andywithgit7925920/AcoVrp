@@ -23,6 +23,7 @@ public class Solution implements Serializable {
     private Truck currentTruck; //当前车辆
     private int currentCicycle;     //当前在第几个循环（即第几辆车）
     private boolean isGoodSolution; //是否是一个好的解
+    private int iterNum;    //计算的迭代次数
 
     public Solution() {
         currentCicycle = 1;
@@ -238,6 +239,14 @@ public class Solution implements Serializable {
         return lastTruck;
     }
 
+    public void setIterNum(int iterNum) {
+        this.iterNum = iterNum;
+    }
+
+    public int getIterNum() {
+        return iterNum;
+    }
+
     public int getCurrentCicycle() {
         return currentCicycle;
     }
@@ -294,7 +303,7 @@ public class Solution implements Serializable {
      * 刪除空的货车
      */
     public void refresh() {
-        //System.out.println("Solution.refresh");
+        //System.out.println("Solution.refreshByCom1");
         Iterator<Truck> it = truckSols.iterator();
         while (it.hasNext()) {
             Truck truck = it.next();

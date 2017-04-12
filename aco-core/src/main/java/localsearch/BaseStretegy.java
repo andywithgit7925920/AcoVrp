@@ -22,9 +22,9 @@ public interface BaseStretegy {
      * @param solution
      */
     default void improveSolution(Solution solution) throws Exception {
-        doUpdate(_2OptStretegy::new, solution, 5);
+        doUpdate(_2OptStretegy::new, solution, 3);
         //System.out.println("2opt优化后-------------------------------->" + solution.calCost());
-        doUpdate(_10RelocateStretegy::new, solution, 5);
+        doUpdate(_10RelocateStretegy::new, solution, 3);
         //System.out.println("10relocate优化后-------------------------------->" + solution.calCost());
         doUpdate(_2Opt$Stretegy::new, solution, 5);
         //System.out.println("2opt*优化后------------------------->" + solution.calCost());

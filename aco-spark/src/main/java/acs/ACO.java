@@ -154,8 +154,8 @@ public class ACO implements Serializable {
                 }
                 pre3Solution = bestSolution;
             }
-            if (FINISHCounter >= Parameter.N) {
-                LogUtil.logger.info("FINISHCounter--->" + Parameter.N);
+            if (FINISHCounter >= Parameter.BREAK_COUNTER) {
+                LogUtil.logger.info("FINISHCounter--->" + Parameter.BREAK_COUNTER);
                 break;
             }
         }

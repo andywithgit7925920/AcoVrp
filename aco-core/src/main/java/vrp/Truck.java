@@ -175,6 +175,7 @@ public class Truck implements Serializable{
      * @return
      */
     public boolean isGoodTruckForHard() {
+
         return !isOverTimeForHard() && !isOverLoad();
     }
 

@@ -1,5 +1,5 @@
 NAME : c102
-COMMENT : (Min no of trucks: 10, Optimal value: 828.94，未得出最优解844.0702708533894)
+COMMENT : (Min no of trucks: 10, Optimal value: 828.94，未得出最优解 835.5979977558135)
 TYPE : CVRPTW
 DIMENSION : 100
 EDGE_WEIGHT_TYPE : EUC_2D 

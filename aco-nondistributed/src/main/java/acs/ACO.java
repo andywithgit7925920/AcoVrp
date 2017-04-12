@@ -1,19 +1,20 @@
 package acs;
 
+import enums.Com1EnumInterface;
+import enums.Com2EnumInterface;
+import enums.ParameterComEnum1;
 import localsearch.*;
 import java.io.Serializable;
 import updatestrategy.BaseUpdateStrategy;
 import updatestrategy.UpdateStrategy4Case1;
 import updatestrategy.UpdateStrategy4Case2;
 
-import static util.LogUtil.logger;
 import static vrp.VRP.*;
 
 import util.DataUtil;
 import util.StringUtil;
 import parameter.Parameter;
 import vrp.Solution;
-import vrp.VRP;
 
 import java.io.IOException;
 
@@ -32,15 +33,71 @@ public class ACO implements Serializable {
     private BaseUpdateStrategy baseUpdateStrategy;  //信息素更新策略
     private BaseStretegy stretegy;  //局部搜索策略
     private Solution pre3Solution = null;
-
+    private Solution preNSolution = null;
+    int FINISHCounter;
 
     public ACO() {
         this.antNum = Parameter.ANT_NUM;
         ITER_NUM = Parameter.ITER_NUM;
         ants = new Ant[antNum];
         baseUpdateStrategy = new UpdateStrategy4Case1();
+        FINISHCounter = 0;
     }
 
+
+    public void init(String filePath, Com1EnumInterface pce) {
+        if (StringUtil.isNotEmpty(filePath)) {
+            try {
+                //导入数据
+                //importDataFromAVRP(FILE_PATH);
+                importDataFromSolomon(filePath);
+                System.out.println("fileName---" + fileName);
+                //初始化信息素矩阵
+                pheromone = new double[clientNum][clientNum];
+                for (int i = 0; i < clientNum; i++) {
+                    for (int j = 0; j < clientNum; j++) {
+                        pheromone[i][j] = Parameter.PHEROMONE_INIT;
+                    }
+                }
+                bestLen = Double.MAX_VALUE;
+                //初始化蚂蚁
+                initAntCommunity();
+            } catch (IOException e) {
+                System.err.print("FILE_PATH invalid!");
+                e.printStackTrace();
+            }
+            Parameter.refreshByCom1(pce);
+        } else {
+            System.err.print("FILE_PATH empty!");
+        }
+    }
+
+    public void init(String filePath, Com2EnumInterface pce) {
+        if (StringUtil.isNotEmpty(filePath)) {
+            try {
+                //导入数据
+                //importDataFromAVRP(FILE_PATH);
+                importDataFromSolomon(filePath);
+                System.out.println("fileName---" + fileName);
+                //初始化信息素矩阵
+                pheromone = new double[clientNum][clientNum];
+                for (int i = 0; i < clientNum; i++) {
+                    for (int j = 0; j < clientNum; j++) {
+                        pheromone[i][j] = Parameter.PHEROMONE_INIT;
+                    }
+                }
+                bestLen = Double.MAX_VALUE;
+                //初始化蚂蚁
+                initAntCommunity();
+            } catch (IOException e) {
+                System.err.print("FILE_PATH invalid!");
+                e.printStackTrace();
+            }
+            Parameter.refreshByCom2(pce);
+        } else {
+            System.err.print("FILE_PATH empty!");
+        }
+    }
 
     public void init(String filePath) {
         if (StringUtil.isNotEmpty(filePath)) {
@@ -63,7 +120,6 @@ public class ACO implements Serializable {
                 System.err.print("FILE_PATH invalid!");
                 e.printStackTrace();
             }
-
         } else {
             System.err.print("FILE_PATH empty!");
         }
@@ -82,24 +138,24 @@ public class ACO implements Serializable {
     /**
      * ACO的运行过程
      */
-    public void run() throws Exception {
-        int RHOCounter = 0;
+    public Solution run() throws Exception {
+        int RHOCounter = 0;     //挥发率动态调整变量
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
             //System.out.println("ITER_NUM:" + i);
             //对于每一只蚂蚁
             for (int j = 0; j < antNum; j++) {
-                //logger.info("第" + j + "只蚂蚁开始");
+                //logger.info("第"+j+"只蚂蚁开始");
                 ants[j].traceRoad(pheromone);
                 //System.out.println("第" + j + "只蚂蚁总路径长度" + ants[j].getLength());
                 //System.out.println("第" + j + "只蚂蚁的解"+ants[j].getSolution());
                 //改变信息素更新策略
                 updatePheromoneBySolution(ants[j]);
+                //logger.info("=========优化解 begin==========");
                 //logger.info("优化前--------------------------------------------------------->" + ants[j].getLength());
-                logger.info("=========优化解 begin==========");
                 BaseStretegy baseStretegy = new DefaultStretegy();
                 baseStretegy.improveSolution(ants[j].getSolution());
-                logger.info("=========优化解 end==========");
+                //logger.info("=========优化解 end==========");
                 //System.out.println("优化后的解------------------------->" + ants[j].getLength());
                 //3.若𝑅的用车 数等于𝑅∗的用车数, 且𝑅的距离/时间费用小于𝑅∗相 应的费用, 或𝑅的用车数小于𝑅∗的用车数时
                 if ((ants[j].getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.less(ants[j].getLength(), bestLen)) || (ants[j].getSolution().getTruckNum() < bestSolution.getTruckNum())) {
@@ -107,28 +163,47 @@ public class ACO implements Serializable {
                     bestLen = bestAnt.getLength();
                     bestSolution = bestAnt.getSolution();
                     //更新最大最小信息素
-                    updateMaxMinPheromone();
+                    //updateMaxMinPheromone();
                 }
                 //更新蚂蚁自身的信息素
                 ants[j].updatePheromone();
                 //baseUpdateStrategy.updateByAntRule2(pheromone, bestAnt);
             }
             ++RHOCounter;
+            ++FINISHCounter;
             //更新信息素
             baseUpdateStrategy.updateByAntRule1(pheromone, ants, bestAnt);
             //初始化蚁群
             initAntCommunity();
-            //如果三代以内，最优解的变化值在3之内，则更新RHO
-            if (RHOCounter > 3) {
+            //如果五代以内，最优解的变化值在3之内，则更新RHO
+            if (RHOCounter > Parameter.RHO_COUNTER) {
                 RHOCounter = 0;
-                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), 3.0)) {
+                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), Parameter.RHO_THRESHOLD)) {
                     updateRHO();
                 }
+                //System.out.println("Parameter.RHO-->"+Parameter.RHO);
                 pre3Solution = bestSolution;
             }
+            if (DataUtil.eq(bestLen,828.9368669428338)){
+                bestSolution.setIterNum(i+1);
+                //System.out.println("iter-->"+i);
+                break;
+            }
+           /* if (FINISHCounter >= Parameter.BREAK_COUNTER) {
+                System.out.println("FINISHCounter >= Parameter.BREAK_COUNTER");
+                System.out.println("preNSolution.calCost()->"+preNSolution.calCost());
+                System.out.println("bestSolution.calCost()->"+bestSolution.calCost());
+                FINISHCounter=0;
+                if (DataUtil.le(preNSolution.calCost()-bestSolution.calCost(),Parameter.BREAK_THESHOLD)){
+                    break;
+                }
+                preNSolution = bestSolution;
+            }*/
         }
+        bestSolution.setIterNum(ITER_NUM);
         //打印最佳结果
         printOptimal();
+        return bestSolution;
     }
 
     /**
@@ -143,8 +218,9 @@ public class ACO implements Serializable {
             bestLen = bestAnt.getLength();
             bestSolution = bestAnt.getSolution();
             //更新最大最小信息素
-            updateMaxMinPheromone();
+            //updateMaxMinPheromone();
             pre3Solution = bestSolution;
+            preNSolution = bestSolution;
         }
         //1.若𝑅的用车数大于𝑅∗的 用车数, 则将𝑅中所有边上的信息素进行大量蒸发
         else if (ant.getSolution().getTruckNum() > bestSolution.getTruckNum()) {
@@ -162,8 +238,8 @@ public class ACO implements Serializable {
 
     private void updateRHO() {
         //System.out.println("ACO.updateRHO");
-        Parameter.RHO *= 1.05;
-        Parameter.RHO = DataUtil.ge(Parameter.RHO, 1.0) ? 0.99 : Parameter.RHO;
+        Parameter.RHO *= 0.95;
+        Parameter.RHO = DataUtil.le(Parameter.RHO, 0.1) ? 0.1 : Parameter.RHO;
         //System.out.println("RHO--->" + Parameter.RHO);
     }
 
@@ -204,15 +280,15 @@ public class ACO implements Serializable {
      */
     private void printOptimal() {
         System.out.println("The optimal length is: " + bestLen);
-        System.out.println("The optimal tour is: ");
-        System.out.println(bestSolution);
-        System.out.println("The value of pheromone:");
+        //System.out.println("The optimal tour is: ");
+        //System.out.println(bestSolution);
+        /*System.out.println("The value of pheromone:");
         for (int i = 0; i < pheromone.length; i++) {
             for (int j = 0; j < pheromone[i].length; j++) {
                 System.out.print(pheromone[i][j] + "\t");
             }
             System.out.print("\n");
-        }
+        }*/
     }
 
     public void setBaseUpdateStrategy(BaseUpdateStrategy baseUpdateStrategy) {

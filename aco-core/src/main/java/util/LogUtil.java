@@ -11,4 +11,7 @@ public class LogUtil {
     }
 
     public static Logger logger = Logger.getLogger("debuglog");
+
+    public static void main(String[] args) {
+    }
 }
