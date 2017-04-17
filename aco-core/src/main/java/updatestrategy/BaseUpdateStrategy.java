@@ -21,7 +21,7 @@ public abstract class BaseUpdateStrategy {
      * @param pheromone
      * @param ant
      */
-    public void updateByAntRule1(double[][] pheromone, Ant ant) {
+    public void  updateByAntRule1(double[][] pheromone, Ant ant) {
         //System.out.println("ConstUtil.PHEROMONE_MAX--->"+ConstUtil.PHEROMONE_MAX);
         //System.out.println("ConstUtil.PHEROMONE_MIN--->"+ConstUtil.PHEROMONE_MIN );
         //信息素挥发

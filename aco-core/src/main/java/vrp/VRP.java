@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class VRP {
     /******待读取信息******/
     /***********vrp***********/
+
     public static String fileName;  //文件名
     public static Integer clientNum;    //顾客数量
     public static Integer capacity;     //货车容量

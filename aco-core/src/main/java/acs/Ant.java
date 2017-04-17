@@ -14,6 +14,7 @@ import parameter.Parameter;
  */
 public class Ant implements Serializable {
     private static final long serialVersionUID = -6878808733419080363L;
+    private int id;
     private Solution solution;
     private int[] allowedClient;  //允许访问的城市
     private int[] visitedClient;    //取值0或1，1表示已经访问过，0表示未访问过
@@ -25,6 +26,10 @@ public class Ant implements Serializable {
         solution = new Solution();
     }
 
+    public Ant(int id){
+        this();
+        this.id = id;
+    }
     /**
      * 蚂蚁初始化
      *
@@ -48,9 +53,21 @@ public class Ant implements Serializable {
         }
     }*/
     public Ant traceRoad(double[][] pheromone){
+        System.out.println("...traceRoad begin..."+this.id);
+        /*System.out.println("The value of pheromone:");
+        System.out.println("-------------------------------------------------------------------");
+        for (int i = 0; i < pheromone.length; i++) {
+            for (int j = 0; j < pheromone[i].length; j++) {
+                System.out.print(pheromone[i][j] + "\t");
+            }
+            System.out.print("\n");
+        }
+        System.out.println("-------------------------------------------------------------------");*/
+
         while (!visitFinish()) {
             selectNextClient(pheromone);
         }
+        System.out.println("...traceRoad end..."+this.id);
         return this;
     }
     /**
@@ -269,6 +286,14 @@ public class Ant implements Serializable {
 
     public void setSolution(Solution solution) {
         this.solution = solution;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

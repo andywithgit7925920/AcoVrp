@@ -22,8 +22,8 @@ public class Parameter {
     //public static final double MU = 3.0;    //节约量影响因子
     /**影响因子**/
     //public static double RHO = 0.8;   //信息素挥发率
-    public static final Integer ANT_NUM = 10;    //蚂蚁数量
-    public static final Integer ITER_NUM = 100;     //迭代数
+    public static final Integer ANT_NUM = 50;    //蚂蚁数量
+    public static final Integer ITER_NUM = 30;     //迭代数
     //public static final double R0 = 0.5;    //用来控制转移规则的参数
     public static final double PHEROMONE_INIT = 1.0;    //信息素的初始值
 
@@ -53,10 +53,10 @@ public class Parameter {
     public static double DELTA = 3.0; //等待时间影响因子
     public static double MU = 2.0;    //节约量影响因子
     public static double R0 = 0.2;    //用来控制转移规则的参数
-    /****实验参数设置组合1****/
-    public static final double O = 500.0;     // Δ𝜏𝑖𝑗 = 𝑂/𝐿(𝑅∗), 𝑂为一常数,
     /****实验参数设置组合2****/
     public static double PHEROMONE_MAX = 5.0;       //信息素最大值
+    /****实验参数设置组合1****/
+    public static double O = 500.0;     // Δ𝜏𝑖𝑗 = 𝑂/𝐿(𝑅∗), 𝑂为一常数,
     public static double pheSpan = 1000.0; //pheromoneMax / Parameter.pheSpan最大最小信息素之间的倍数
     public static double PHEROMONE_MIN = PHEROMONE_MAX/pheSpan;    //信息素最小值
     //public static double PHEROMONE_MIN = 1E-5;    //信息素最小值
@@ -74,6 +74,7 @@ public class Parameter {
         pheSpan = com2EnumInterface.getPheSpan();
         PHEROMONE_MIN = PHEROMONE_MAX/pheSpan;
         RHO = com2EnumInterface.getRho();
+        O = com2EnumInterface.getO();
     }
 
 }

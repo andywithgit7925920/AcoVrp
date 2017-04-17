@@ -11,17 +11,17 @@ import vrp.Solution;
  */
 public class Launcher {
     public static void main(String[] args) throws Exception {
-        ParameterComEnum1[] parameterComEnums = ParameterComEnum1.values();
+        /*ParameterComEnum1[] parameterComEnums = ParameterComEnum1.values();
         for (ParameterComEnum1 parameterComEnum : parameterComEnums){
             System.out.println(parameterComEnum);
-            getBestResult("C102",parameterComEnum);
-        }
-        /*ParameterComEnum2[] parameterComEnum2s = ParameterComEnum2.values();
+            getBestResult("R102",parameterComEnum);
+        }*/
+        ParameterComEnum2[] parameterComEnum2s = ParameterComEnum2.values();
         for (ParameterComEnum2 parameterComEnum2:parameterComEnum2s){
             System.out.println(parameterComEnum2);
             getBestResult("C102",parameterComEnum2);
 
-        }*/
+        }
     }
     public static void getBestResult(String val, ParameterComEnum1 pce) throws Exception{
         org.apache.log4j.LogManager.resetConfiguration();
@@ -51,7 +51,7 @@ public class Launcher {
     public static void getBestResult(String val, ParameterComEnum2 pce) throws Exception{
         org.apache.log4j.LogManager.resetConfiguration();
         org.apache.log4j.PropertyConfigurator.configure("C:\\Users\\ab792\\IdeaProjects\\AcoVrp\\log4j.properties");
-        Solution[] solutions = new Solution[10];
+        Solution[] solutions = new Solution[5];
         for (int i=0;i<solutions.length;i++){
             //String fileName = "benchmark\\solomon\\C1\\"+val+".vrp";
             String fileName = "benchmark\\solomon\\C1\\"+val+".vrp";

@@ -32,7 +32,7 @@ public class ACO implements Serializable {
     private Ant[] ants; //蚂蚁
     private Integer antNum; //蚂蚁数量
     private Integer ITER_NUM;   //迭代数
-    private double[][] pheromone;   //信息素矩阵
+    private double[][]  pheromone;   //信息素矩阵
     private volatile Broadcast<double[][]> broadcastPheromone = null;   //广播变量
     private double bestLen; //最佳长度
     private Solution bestSolution;  //最佳解
@@ -95,7 +95,7 @@ public class ACO implements Serializable {
      */
     private void initAntCommunity() {
         for (int i = 0; i < antNum; i++) {
-            ants[i] = new Ant();
+            ants[i] = new Ant(i);
             ants[i].init();
         }
     }
@@ -103,20 +103,21 @@ public class ACO implements Serializable {
     /**
      * ACO的运行过程
      */
-    public void run(BaseStretegy baseStretegy) throws Exception {
-        SparkConf conf = new SparkConf().setAppName(Parameter.appName).setMaster(Parameter.master);
+    public Solution run(BaseStretegy baseStretegy) throws Exception {
+        //SparkConf conf = new SparkConf().setAppName(Parameter.appName).setMaster(Parameter.master);
+        SparkConf conf = new SparkConf().setAppName(Parameter.appName);
         JavaSparkContext ctx = new JavaSparkContext(conf);
         //初始化广播变量
-        System.out.println("广播开始");
+        //System.out.println("broadcast begin..");
         broadcastPheromone = ctx.broadcast(pheromone);
-        System.out.println("广播结束");
+        //System.out.println("broadcast end..");
         int RHOCounter = 0;
         FINISHCounter = 0;
         //进行ITER_NUM次迭代
         for (int i = 0; i < ITER_NUM; i++) {
             //System.out.println("ITER_NUM:" + i);
             //对于每一只蚂蚁
-            JavaRDD<Ant> antsRdds = ctx.parallelize(Arrays.asList(ants));
+            JavaRDD<Ant> antsRdds = ctx.parallelize(Arrays.asList(ants),8);
             JavaRDD<Ant> improvedAntsRdds = antsRdds.map(x -> {
                         /*Ant tempAnt = x.traceRoad(pheromone);*/
                         Ant tempAnt = x.traceRoad(broadcastPheromone.value());
@@ -132,35 +133,37 @@ public class ACO implements Serializable {
             List<Tuple2<Double, Ant>> list = sortedPairs.collect();
             //list.forEach(x-> System.out.println(x._2().getClass() + ": " + x._1()));
             Ant result = list.get(0)._2();
-            LogUtil.logger.info(result);
+            //System.out.println("result-->"+result);
+            //LogUtil.logger.info(result);
             updatePheromoneBySolution(result);
             //更新蚂蚁自身的信息素
             result.updatePheromone();
             //更新信息素
-            baseUpdateStrategy.updateByAntRule2(pheromone, bestAnt);
+            baseUpdateStrategy.updateByAntRule1(pheromone, bestAnt);
             //再次广播变量
-            System.out.println("广播开始");
+            //System.out.println("broadcast begin..");
             broadcastPheromone = ctx.broadcast(pheromone);
-            System.out.println("广播结束");
+            //System.out.println("broadcast end..");
             ++RHOCounter;
             ++FINISHCounter;
             //初始化蚁群
             initAntCommunity();
             //如果三代以内，最优解的变化值在3之内，则更新RHO
-            if (RHOCounter > 3) {
+            if (RHOCounter > Parameter.RHO_COUNTER) {
                 RHOCounter = 0;
-                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), 3.0)) {
+                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), Parameter.RHO_THRESHOLD)) {
                     updateRHO();
                 }
                 pre3Solution = bestSolution;
             }
-            if (FINISHCounter >= Parameter.BREAK_COUNTER) {
+            /*if (FINISHCounter >= Parameter.BREAK_COUNTER) {
                 LogUtil.logger.info("FINISHCounter--->" + Parameter.BREAK_COUNTER);
                 break;
-            }
+            }*/
         }
         //打印最佳结果
-        printOptimal();
+        //printOptimal();
+        return bestSolution;
     }
 
     /**
@@ -248,13 +251,13 @@ public class ACO implements Serializable {
         System.out.println("The optimal length is: " + bestLen);
         System.out.println("The optimal tour is: ");
         System.out.println(bestSolution);
-        System.out.println("The value of pheromone:");
+        /*System.out.println("The value of pheromone:");
         for (int i = 0; i < pheromone.length; i++) {
             for (int j = 0; j < pheromone[i].length; j++) {
                 System.out.print(pheromone[i][j] + "\t");
             }
             System.out.print("\n");
-        }
+        }*/
     }
 
     public void setBaseUpdateStrategy(BaseUpdateStrategy baseUpdateStrategy) {
