@@ -1,5 +1,7 @@
 package vrp;
 
+import util.VrpTransportTemp;
+
 import java.io.Serializable;
 
 import java.util.Iterator;
@@ -24,15 +26,17 @@ public class Solution implements Serializable {
     private int currentCicycle;     //当前在第几个循环（即第几辆车）
     private boolean isGoodSolution; //是否是一个好的解
     private int iterNum;    //计算的迭代次数
+    private VrpTransportTemp vrpTransportTemp;
 
-    public Solution() {
+    public Solution(VrpTransportTemp vrpTransportTemp) {
+        this.vrpTransportTemp = vrpTransportTemp;
         currentCicycle = 1;
-        Truck firstTruck = new Truck(currentCicycle);
+        Truck firstTruck = new Truck(currentCicycle, vrpTransportTemp);
         truckSols.add(firstTruck);
         currentTruck = firstTruck;
     }
 
-    public Solution(LinkedList<Truck> truckSols) {
+    private Solution(LinkedList<Truck> truckSols) {
         this.truckSols = truckSols;
     }
 
@@ -57,7 +61,7 @@ public class Solution implements Serializable {
     public void addCus(int currentCus) {
         if (currentCus != 0) {
             if (currentCicycle > truckSols.size()) {
-                Truck truck = new Truck(currentCicycle);
+                Truck truck = new Truck(currentCicycle, vrpTransportTemp);
                 truck.addCus(currentCus);
                 addTruck(truck);
             } else {
@@ -262,7 +266,7 @@ public class Solution implements Serializable {
     public Truck getCurrentTruck() {
         /*******************/
         if (currentCicycle > truckSols.size()) {
-            Truck truck = new Truck(currentCicycle);
+            Truck truck = new Truck(currentCicycle, vrpTransportTemp);
             currentTruck = truck;
             addTruck(truck);
         }
@@ -290,7 +294,7 @@ public class Solution implements Serializable {
      * @return
      */
     public Solution clone() {
-        Solution cloneSolution = new Solution();
+        Solution cloneSolution = new Solution(vrpTransportTemp);
         LinkedList<Truck> cloneTruckSols = new LinkedList<Truck>();
         for (Truck truck : truckSols) {
             cloneTruckSols.add(truck.clone());

@@ -6,15 +6,17 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
+import parameter.Parameter;
 import scala.Serializable;
 
 import scala.Tuple2;
+import scala.xml.PrettyPrinter;
 import updatestrategy.BaseUpdateStrategy;
 import updatestrategy.UpdateStrategy4Case1;
 import updatestrategy.UpdateStrategy4Case2;
 
+import util.VrpTransportTemp;
 import util.DataUtil;
-import util.LogUtil;
 import util.StringUtil;
 import vrp.Solution;
 import vrp.VRP;
@@ -22,7 +24,6 @@ import vrp.VRP;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import parameter.Parameter;
 
 /**
  * Created by ab792 on 2016/12/30.
@@ -43,11 +44,13 @@ public class ACO implements Serializable {
     private Solution preNSolution = null;
     int FINISHCounter;
     private JavaSparkContext ctx;
+    private VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
+    private Parameter parameter = new Parameter();
 
 
     public ACO() {
-        this.antNum = Parameter.ANT_NUM;
-        ITER_NUM = Parameter.ITER_NUM;
+        this.antNum = parameter.ANT_NUM;
+        ITER_NUM = parameter.ITER_NUM;
         ants = new Ant[antNum];
         baseUpdateStrategy = new UpdateStrategy4Case1();
         FINISHCounter = 0;
@@ -55,8 +58,8 @@ public class ACO implements Serializable {
 
     public ACO(JavaSparkContext ctx) {
         this.ctx = ctx;
-        this.antNum = Parameter.ANT_NUM;
-        ITER_NUM = Parameter.ITER_NUM;
+        this.antNum = parameter.ANT_NUM;
+        ITER_NUM = parameter.ITER_NUM;
         ants = new Ant[antNum];
         baseUpdateStrategy = new UpdateStrategy4Case1();
         FINISHCounter = 0;
@@ -68,18 +71,22 @@ public class ACO implements Serializable {
                 //导入数据
                 //importDataFromAVRP(FILE_PATH);
                 VRP.importDataFromSolomon(filePath);
-                System.out.println("fileName---" + VRP.fileName);
+                //将所有静态变量封装进Cache中
+                VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
+                vrpTransportTemp.importDataFromVrp();
+                this.vrpTransportTemp = vrpTransportTemp;
+                System.out.println("fileName---" + vrpTransportTemp.fileName);
                 //初始化信息素矩阵
-                pheromone = new double[VRP.clientNum][VRP.clientNum];
-                for (int i = 0; i < VRP.clientNum; i++) {
-                    for (int j = 0; j < VRP.clientNum; j++) {
-                        pheromone[i][j] = Parameter.PHEROMONE_INIT;
+                pheromone = new double[vrpTransportTemp.clientNum][vrpTransportTemp.clientNum];
+                for (int i = 0; i < vrpTransportTemp.clientNum; i++) {
+                    for (int j = 0; j < vrpTransportTemp.clientNum; j++) {
+                        pheromone[i][j] = parameter.PHEROMONE_INIT;
                     }
                 }
 
                 bestLen = Double.MAX_VALUE;
                 //初始化蚂蚁
-                initAntCommunity();
+                initAntCommunity(vrpTransportTemp);
             } catch (IOException e) {
                 System.err.print("FILE_PATH invalid!");
                 e.printStackTrace();
@@ -93,9 +100,9 @@ public class ACO implements Serializable {
     /**
      * 初始化蚂蚁
      */
-    private void initAntCommunity() {
+    private void initAntCommunity(VrpTransportTemp vrpTransportTemp) {
         for (int i = 0; i < antNum; i++) {
-            ants[i] = new Ant(i);
+            ants[i] = new Ant(i, vrpTransportTemp);
             ants[i].init();
         }
     }
@@ -104,8 +111,8 @@ public class ACO implements Serializable {
      * ACO的运行过程
      */
     public Solution run(BaseStretegy baseStretegy) throws Exception {
-        //SparkConf conf = new SparkConf().setAppName(Parameter.appName).setMaster(Parameter.master);
-        SparkConf conf = new SparkConf().setAppName(Parameter.appName);
+        SparkConf conf = new SparkConf().setAppName(parameter.appName).setMaster(parameter.master);
+        //SparkConf conf = new SparkConf().setAppName(Parameter.appName);
         JavaSparkContext ctx = new JavaSparkContext(conf);
         //初始化广播变量
         //System.out.println("broadcast begin..");
@@ -139,7 +146,7 @@ public class ACO implements Serializable {
             //更新蚂蚁自身的信息素
             result.updatePheromone();
             //更新信息素
-            baseUpdateStrategy.updateByAntRule1(pheromone, bestAnt);
+            baseUpdateStrategy.updateByAntRule1(pheromone, bestAnt, vrpTransportTemp,parameter);
             //再次广播变量
             //System.out.println("broadcast begin..");
             broadcastPheromone = ctx.broadcast(pheromone);
@@ -147,12 +154,12 @@ public class ACO implements Serializable {
             ++RHOCounter;
             ++FINISHCounter;
             //初始化蚁群
-            initAntCommunity();
+            initAntCommunity(vrpTransportTemp);
             //如果三代以内，最优解的变化值在3之内，则更新RHO
-            if (RHOCounter > Parameter.RHO_COUNTER) {
+            if (RHOCounter > parameter.RHO_COUNTER) {
                 RHOCounter = 0;
-                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), Parameter.RHO_THRESHOLD)) {
-                    updateRHO();
+                if (DataUtil.le(pre3Solution.calCost() - bestSolution.calCost(), parameter.RHO_THRESHOLD)) {
+                    updateRHO(parameter);
                 }
                 pre3Solution = bestSolution;
             }
@@ -178,7 +185,7 @@ public class ACO implements Serializable {
             bestLen = bestAnt.getLength();
             bestSolution = bestAnt.getSolution();
             //更新最大最小信息素
-            updateMaxMinPheromone();
+            updateMaxMinPheromone(parameter);
             pre3Solution = bestSolution;
             preNSolution = bestSolution;
         }
@@ -186,13 +193,13 @@ public class ACO implements Serializable {
         else if (ant.getSolution().getTruckNum() > bestSolution.getTruckNum()) {
             //logger.info("=========case2==========");
             setBaseUpdateStrategy(new UpdateStrategy4Case1());
-            baseUpdateStrategy.updatePheBySolution(pheromone, ant.getSolution());
+            baseUpdateStrategy.updatePheBySolution(pheromone, ant.getSolution(),parameter);
         }
         //2.若𝑅的用车数等 于𝑅∗的用车数, 但𝑅的距离/时间费用大于等于𝑅∗相 应的费用, 则将𝑅中所有边上的信息素进行少量蒸发
         else if (ant.getSolution().getTruckNum() == bestSolution.getTruckNum() && DataUtil.ge(ant.getLength(), bestLen)) {
             //logger.info("=========case3==========");
             setBaseUpdateStrategy(new UpdateStrategy4Case2());
-            baseUpdateStrategy.updatePheBySolution(pheromone, ant.getSolution());
+            baseUpdateStrategy.updatePheBySolution(pheromone, ant.getSolution(),parameter);
         } else {
             //logger.info("=========case4==========");
             bestAnt = ant;
@@ -201,23 +208,23 @@ public class ACO implements Serializable {
             preNSolution = bestSolution;
             FINISHCounter = 0;
             //更新最大最小信息素
-            updateMaxMinPheromone();
+            updateMaxMinPheromone(parameter);
         }
     }
 
-    private void updateRHO() {
+    private void updateRHO(Parameter parameter) {
         //System.out.println("ACO.updateRHO");
-        Parameter.RHO *= 1.05;
-        Parameter.RHO = DataUtil.ge(Parameter.RHO, 1.0) ? 0.99 : Parameter.RHO;
+        parameter.RHO *= 1.05;
+        parameter.RHO = DataUtil.ge(parameter.RHO, 1.0) ? 0.99 : parameter.RHO;
         //System.out.println("RHO--->" + Parameter.RHO);
     }
 
     /**
      * 更新最大最小信息素
      */
-    private void updateMaxMinPheromone() {
-        Parameter.PHEROMONE_MAX = calPheromoneMax(bestLen, VRP.clientNum);
-        Parameter.PHEROMONE_MIN = calPheromoneMin(Parameter.PHEROMONE_MAX);
+    private void updateMaxMinPheromone(Parameter parameter) {
+        parameter.PHEROMONE_MAX = calPheromoneMax(bestLen, vrpTransportTemp.clientNum);
+        parameter.PHEROMONE_MIN = calPheromoneMin(parameter.PHEROMONE_MAX);
     }
 
     /**
@@ -228,7 +235,7 @@ public class ACO implements Serializable {
      * @return
      */
     private Double calPheromoneMin(Double pheromoneMax) {
-        return pheromoneMax / Parameter.pheSpan;
+        return pheromoneMax / parameter.pheSpan;
     }
 
     /**
@@ -240,7 +247,7 @@ public class ACO implements Serializable {
      * @return
      */
     private Double calPheromoneMax(double bestLen, Integer clientNum) {
-        return Parameter.C / bestLen * (clientNum - 1) * (1 - Parameter.RHO);
+        return parameter.C / bestLen * (clientNum - 1) * (1 - parameter.RHO);
     }
 
 

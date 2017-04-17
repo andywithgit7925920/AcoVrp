@@ -3,7 +3,6 @@ package localsearch;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.SpinnerValueFactory;
 
-import static vrp.VRP.*;
 
 import util.DataUtil;
 import vrp.Solution;

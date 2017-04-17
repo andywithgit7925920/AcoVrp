@@ -4,7 +4,6 @@ import util.DataUtil;
 import vrp.Solution;
 import vrp.Truck;
 
-import static vrp.VRP.*;
 
 import java.util.LinkedList;
 

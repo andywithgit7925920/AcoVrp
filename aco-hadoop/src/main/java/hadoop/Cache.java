@@ -27,7 +27,7 @@ public class Cache {
     }
 	@Override
 	public String toString() {
-		return "Cache [fileName=" + fileName + ", clientNum=" + clientNum
+		return "VrpTransportTemp [fileName=" + fileName + ", clientNum=" + clientNum
 				+ ", capacity=" + capacity + ", distance="
 				+ Arrays.toString(distance) + ", clientDemandArr="
 				+ Arrays.toString(clientDemandArr) + ", serviceTime="

@@ -53,7 +53,7 @@ public class VRP {
             if (line.startsWith("CAPACITY")) {
                 capacity = Integer.valueOf(line.substring(11));
                 //将值直接赋给truck
-                Truck.capacity = capacity;
+                //Truck.capacity = capacity;
             }
             if (line.startsWith("NODE_COORD_SECTION") || line.startsWith("DEMAND_SECTION")) {
                 flag4NodeCoordSection = !flag4NodeCoordSection;
@@ -93,6 +93,11 @@ public class VRP {
         MatrixUtil.printMatrix(distance);
     }
 
+    /**
+     * 引入数据并将数据保存入静态变量VRP中
+     * @param filePath
+     * @throws IOException
+     */
     public static void importDataFromSolomon(String filePath) throws IOException {
         Double[] x_Axis = null;
         Double[] y_Axis = null;
@@ -115,7 +120,7 @@ public class VRP {
             if (line.startsWith("CAPACITY")) {
                 capacity = Integer.valueOf(line.substring(11));
                 //将值直接赋给truck
-                Truck.capacity = capacity;
+                //Truck.capacity = capacity;
                 //System.out.println("capacity--->" + capacity);
             }
             if (line.startsWith("INFORMATION")) {

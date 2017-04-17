@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class MapperStep1 extends
 		Mapper<Object, Text, IntWritable, AntTempEntity> {
-	// private static Cache cache;
+	// private static VrpTransportTemp cache;
 	private static PheromoneData pheromoneData;
 
 	@Override
@@ -51,7 +51,7 @@ public class MapperStep1 extends
 		//String str;
 		try {
 			// str = HDFSUtil.getCacheStr(path[0]);
-			// cache = GsonUtil.gson.fromJson(str, Cache.class); //cache got
+			// cache = GsonUtil.gson.fromJson(str, VrpTransportTemp.class); //cache got
 			// get pheromone data from HDFS
 			String str1 = HDFSUtil.readFile(DataPathEnum.PheromoneData
 					.toString());

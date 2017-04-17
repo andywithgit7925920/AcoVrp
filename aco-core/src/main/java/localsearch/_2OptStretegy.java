@@ -86,7 +86,7 @@ public class _2OptStretegy implements BaseStretegy {
         if (truck == null || indexI >= indexJ || indexI < 0 || indexJ >= truck.getCustomers().size()) {
             return null;
         }
-        Truck copyTruck = new Truck(truck.getId());
+        Truck copyTruck = new Truck(truck.getId(),truck.getVrpTransportTemp());
         LinkedList<Integer> newCustomers = new LinkedList<Integer>();
         LinkedList<Integer> customers = truck.getCustomers();
         for (int i = 0; i < indexI; i++) {

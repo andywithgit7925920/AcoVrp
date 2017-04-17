@@ -3,7 +3,6 @@ package localsearch;
 import vrp.Solution;
 import vrp.Truck;
 
-import static vrp.VRP.*;
 
 import java.util.LinkedList;
 
@@ -83,7 +82,7 @@ public class _10RelocateStretegy implements BaseStretegy {
     public Truck  insert(Truck truck, int indexI, int indexJ) throws Exception {
         if (truck == null || truck.getCustomers().size() <= indexI)
             throw new Exception("input invalid!");
-        Truck copyTruck = new Truck(truck.getId());
+        Truck copyTruck = new Truck(truck.getId(),truck.getVrpTransportTemp());
         LinkedList<Integer> customers = truck.getCustomers();
         LinkedList<Integer> newCustomers = new LinkedList<Integer>(customers);
         int temp = newCustomers.get(indexI);

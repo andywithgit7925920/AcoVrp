@@ -1,8 +1,10 @@
 package updatestrategy;
 
 import java.io.Serializable;
-import vrp.Solution;
+
 import parameter.Parameter;
+import vrp.Solution;
+/*import parameter.Parameter;*/
 
 /**
  * Created by ab792 on 2017/2/7.
@@ -11,9 +13,10 @@ import parameter.Parameter;
  */
 public class UpdateStrategy4Case1 extends BaseUpdateStrategy implements Serializable{
     private static final long serialVersionUID = 5036970613540384959L;
-    public double P = Math.pow(1 - Parameter.RHO, 3);
 
-    public void updatePheBySolution(double[][] pheromone, Solution solution) {
+
+    public void updatePheBySolution(double[][] pheromone, Solution solution, Parameter parameter) {
+        double P = Math.pow(1 - parameter.RHO, 3);
         if (pheromone != null && solution != null) {
             for (int k1 = 0; k1 < solution.size(); k1++) {
                 pheromone[0][solution.getTruckSols().get(k1).getCustomers().get(0)] *= P;

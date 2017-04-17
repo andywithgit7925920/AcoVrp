@@ -1,12 +1,15 @@
 package acs;
 
 import java.io.Serializable;
+
 import util.ArrayUtil;
+import util.VrpTransportTemp;
 import util.DataUtil;
 import vrp.Solution;
 import vrp.Truck;
-import vrp.VRP;
+
 import java.util.*;
+
 import parameter.Parameter;
 
 /**
@@ -19,17 +22,22 @@ public class Ant implements Serializable {
     private int[] allowedClient;  //允许访问的城市
     private int[] visitedClient;    //取值0或1，1表示已经访问过，0表示未访问过
     private double[][] delta;   //信息素变化矩阵
+    private VrpTransportTemp vrpTransportTemp;
+    private Parameter parameter = new Parameter();
 
-    public Ant() {
-        allowedClient = new int[VRP.clientNum];
-        delta = new double[VRP.clientNum][VRP.clientNum];
-        solution = new Solution();
-    }
-
-    public Ant(int id){
-        this();
+    private Ant(int id) {
         this.id = id;
     }
+
+    public Ant(int id, VrpTransportTemp vrpTransportTemp) {
+        this(id);
+        this.vrpTransportTemp = vrpTransportTemp;
+        allowedClient = new int[vrpTransportTemp.clientNum];
+        delta = new double[vrpTransportTemp.clientNum][vrpTransportTemp.clientNum];
+        solution = new Solution(vrpTransportTemp);
+
+    }
+
     /**
      * 蚂蚁初始化
      *
@@ -37,7 +45,7 @@ public class Ant implements Serializable {
      */
     public void init() {
         //将蚂蚁初始化在出发站
-        visitedClient = new int[VRP.clientNum];
+        visitedClient = new int[vrpTransportTemp.clientNum];
         //默认开始从起始点出发
         visitedClient[0] = 1;
         ArrayUtil.initIntegerArray2One(allowedClient);
@@ -45,6 +53,7 @@ public class Ant implements Serializable {
 
     /**
      * 蚂蚁搜寻一条路径
+     *
      * @param pheromone
      */
     /*public void traceRoad(double[][] pheromone){
@@ -52,8 +61,8 @@ public class Ant implements Serializable {
             selectNextClient(pheromone);
         }
     }*/
-    public Ant traceRoad(double[][] pheromone){
-        System.out.println("...traceRoad begin..."+this.id);
+    public Ant traceRoad(double[][] pheromone) {
+        System.out.println("...traceRoad begin..." + this.id);
         /*System.out.println("The value of pheromone:");
         System.out.println("-------------------------------------------------------------------");
         for (int i = 0; i < pheromone.length; i++) {
@@ -67,49 +76,41 @@ public class Ant implements Serializable {
         while (!visitFinish()) {
             selectNextClient(pheromone);
         }
-        System.out.println("...traceRoad end..."+this.id);
+        System.out.println("...traceRoad end..." + this.id);
         return this;
     }
+
     /**
      * 选择下一个城市
      *
      * @param pheromone
      */
     public void selectNextClient(double[][] pheromone) {
-        double[] p = new double[VRP.clientNum];
+        double[] p = new double[vrpTransportTemp.clientNum];
         double sum = 0.0;
         Truck currTruck = solution.getCurrentTruck();
         int currentCus = currTruck.getCurrentCus();
-        Map<Integer,Double> map = new HashMap<>(VRP.clientNum);
+        Map<Integer, Double> map = new HashMap<>(vrpTransportTemp.clientNum);
         //计算分母部分
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                double waitTime = VRP.time[i][0] - (currTruck.calNowServiceTime() + VRP.distance[currentCus][i]);
+                double waitTime = vrpTransportTemp.time[i][0] - (currTruck.calNowServiceTime() + vrpTransportTemp.distance[currentCus][i]);
                 waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
-                double saved = VRP.savedQnuantity[currentCus][i];
+                double saved = vrpTransportTemp.savedQnuantity[currentCus][i];
                 saved = (DataUtil.le(saved, 0.0)) ? 0.1 : saved;
-                double temp = Math.pow(pheromone[currentCus][i], Parameter.ALPHA)
-                        * Math.pow(1.0 / VRP.distance[currentCus][i], Parameter.BETA)
-                        * Math.pow(1.0 / VRP.time[i][2], Parameter.GAMMA)
-                        * Math.pow(1.0 / waitTime, Parameter.DELTA)
-                        * Math.pow(saved, Parameter.MU);
-                map.put(i,temp);
+                double temp = Math.pow(pheromone[currentCus][i], parameter.ALPHA)
+                        * Math.pow(1.0 / vrpTransportTemp.distance[currentCus][i], parameter.BETA)
+                        * Math.pow(1.0 / vrpTransportTemp.time[i][2], parameter.GAMMA)
+                        * Math.pow(1.0 / waitTime, parameter.DELTA)
+                        * Math.pow(saved, parameter.MU);
+                map.put(i, temp);
                 sum += temp;
             }
         }
         //计算概率矩阵
         for (int i = 0; i < allowedClient.length; i++) {
             if (allowedClient[i] == 1) {
-                /*double waitTime = VRP.time[i][0] - (currTruck.calNowServiceTime() + VRP.distance[currentCus][i]);
-                waitTime = (DataUtil.le(waitTime, 0.0)) ? 0.1 : waitTime;
-                double saved = VRP.savedQnuantity[currentCus][i];
-                saved = (DataUtil.le(saved, 0.0)) ? 0.1 : saved;
-                p[i] = Math.pow(pheromone[currentCus][i], Parameter.ALPHA)
-                        * Math.pow(1.0 / VRP.distance[currentCus][i], Parameter.BETA)
-                        * Math.pow(1.0 / VRP.time[i][2], Parameter.GAMMA)
-                        * Math.pow(1.0 / waitTime, Parameter.DELTA)
-                        * Math.pow(saved, Parameter.MU) / sum;*/
-                p[i] = map.get(i)/sum;
+                p[i] = map.get(i) / sum;
             } else {
                 p[i] = 0.0;
             }
@@ -117,7 +118,7 @@ public class Ant implements Serializable {
         //轮盘赌选择下一个城市
         double R = Math.random();
         int selectedClient;
-        if (R <= Parameter.R0) {
+        if (R <= parameter.R0) {
             selectedClient = stateTransferRule1(p);
         } else {
             selectedClient = stateTransferRule2(p, R);
@@ -230,12 +231,12 @@ public class Ant implements Serializable {
      */
     public void updatePheromone() {
         for (int k1 = 0; k1 < getSolution().size(); k1++) {
-            getDelta()[0][getSolution().getTruckSols().get(k1).getCustomers().get(0).intValue()] = (Parameter.O / getLength());
+            getDelta()[0][getSolution().getTruckSols().get(k1).getCustomers().get(0).intValue()] = (parameter.O / getLength());
             for (int k2 = 0, len2 = getSolution().getTruckSols().get(k1).size(); k2 + 1 < len2; k2++) {
-                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()] = (Parameter.O / getLength());
-                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()] = (Parameter.O / getLength());
+                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()] = (parameter.O / getLength());
+                getDelta()[getSolution().getTruckSols().get(k1).getCustomers().get(k2 + 1).intValue()][getSolution().getTruckSols().get(k1).getCustomers().get(k2).intValue()] = (parameter.O / getLength());
             }
-            getDelta()[getSolution().getTruckSols().get(k1).size() - 1][0] = (Parameter.O / getLength());
+            getDelta()[getSolution().getTruckSols().get(k1).size() - 1][0] = (parameter.O / getLength());
         }
     }
 
@@ -269,11 +270,6 @@ public class Ant implements Serializable {
 
     public int[] getVisitedClient() {
         return visitedClient;
-    }
-
-
-    public Integer getCapacity() {
-        return VRP.capacity;
     }
 
     public double[][] getDelta() {
