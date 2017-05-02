@@ -44,7 +44,7 @@ public class ACO implements Serializable {
     private Solution preNSolution = null;
     int FINISHCounter;
     private JavaSparkContext ctx;
-    private VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
+    private VrpTransportTemp vrpTransportTemp;
     private Parameter parameter = new Parameter();
 
 
@@ -73,7 +73,6 @@ public class ACO implements Serializable {
                 VRP.importDataFromSolomon(filePath);
                 //将所有静态变量封装进Cache中
                 VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
-                vrpTransportTemp.importDataFromVrp();
                 this.vrpTransportTemp = vrpTransportTemp;
                 System.out.println("fileName---" + vrpTransportTemp.fileName);
                 //初始化信息素矩阵
@@ -112,7 +111,7 @@ public class ACO implements Serializable {
      */
     public Solution run(BaseStretegy baseStretegy) throws Exception {
         SparkConf conf = new SparkConf().setAppName(parameter.appName).setMaster(parameter.master);
-        //SparkConf conf = new SparkConf().setAppName(Parameter.appName);
+        //SparkConf conf = new SparkConf().setAppName(parameter.appName);
         JavaSparkContext ctx = new JavaSparkContext(conf);
         //初始化广播变量
         //System.out.println("broadcast begin..");
@@ -167,10 +166,21 @@ public class ACO implements Serializable {
                 LogUtil.logger.info("FINISHCounter--->" + Parameter.BREAK_COUNTER);
                 break;
             }*/
+            printResult(i,result);
         }
         //打印最佳结果
         //printOptimal();
         return bestSolution;
+    }
+
+    /**
+     * 打印每次迭代的结果
+     * @param iterNum
+     */
+    private void printResult(int iterNum,Ant ant) {
+        //System.out.println(iterNum);
+        //System.out.println(ant.getLength());
+        System.out.println(bestLen);
     }
 
     /**

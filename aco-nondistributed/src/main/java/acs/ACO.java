@@ -9,6 +9,7 @@ import updatestrategy.BaseUpdateStrategy;
 import updatestrategy.UpdateStrategy4Case1;
 import updatestrategy.UpdateStrategy4Case2;
 
+import static util.LogUtil.logger;
 import static vrp.VRP.*;
 
 import util.DataUtil;
@@ -130,7 +131,7 @@ public class ACO implements Serializable {
      */
     private void initAntCommunity() {
         for (int i = 0; i < antNum; i++) {
-            ants[i] = new Ant();
+            ants[i] = new Ant(i);
             ants[i].init();
         }
     }

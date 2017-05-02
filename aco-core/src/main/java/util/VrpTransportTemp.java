@@ -23,17 +23,21 @@ public class VrpTransportTemp implements Serializable {
     public double[] serviceTime;   //服务时间
     public double[][] time;     //车辆起止时间
     public double[][] savedQnuantity;    //节约量
+
     /************vrptw**********/
-    public VrpTransportTemp( ) { }
-    public void importDataFromVrp(){
+    public VrpTransportTemp() {
+        importDataFromVrp();
+    }
+
+    public void importDataFromVrp() {
         this.fileName = VRP.fileName;
         this.clientNum = VRP.clientNum;
         this.capacity = VRP.capacity;
-        distance = Arrays.copyOf(VRP.distance,clientNum);
-        clientDemandArr = Arrays.copyOf(VRP.clientDemandArr,clientNum);
-        serviceTime = Arrays.copyOf(VRP.serviceTime,clientNum);
-        time = Arrays.copyOf(VRP.time,clientNum);
-        savedQnuantity = Arrays.copyOf(VRP.savedQnuantity,clientNum);
+        distance = Arrays.copyOf(VRP.distance, clientNum);
+        clientDemandArr = Arrays.copyOf(VRP.clientDemandArr, clientNum);
+        serviceTime = Arrays.copyOf(VRP.serviceTime, clientNum);
+        time = Arrays.copyOf(VRP.time, clientNum);
+        savedQnuantity = Arrays.copyOf(VRP.savedQnuantity, clientNum);
     }
 
 }

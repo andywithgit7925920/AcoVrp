@@ -25,8 +25,8 @@ public class Parameter implements Serializable{
     //public final double MU = 3.0;    //节约量影响因子
     /**影响因子**/
     //public static double RHO = 0.8;   //信息素挥发率
-    public Integer ANT_NUM = 10;    //蚂蚁数量
-    public Integer ITER_NUM = 10;     //迭代数
+    public Integer ANT_NUM = 1;    //蚂蚁数量
+    public Integer ITER_NUM = 2;     //迭代数
     //public static final double R0 = 0.5;    //用来控制转移规则的参数
     public double PHEROMONE_INIT = 1.0;    //信息素的初始值
 

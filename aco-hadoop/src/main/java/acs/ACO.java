@@ -43,7 +43,7 @@ public class ACO implements Serializable {
     private Solution preNSolution = null;
     private static PheromoneData pheromoneData;
     int FINISHCounter;
-    private VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
+    private VrpTransportTemp vrpTransportTemp;
     private Parameter parameter = new Parameter();
 
     public ACO() {
@@ -61,9 +61,8 @@ public class ACO implements Serializable {
                 //导入数据
                 VRP.importDataFromSolomon(filePath);
                 //将所有静态变量封装进Cache中
-                VrpTransportTemp vrpTransportTemp = new VrpTransportTemp();
+                vrpTransportTemp = new VrpTransportTemp();
                 vrpTransportTemp.importDataFromVrp();
-                this.vrpTransportTemp = vrpTransportTemp;
                 LogUtil.logger.info("fileName---" + vrpTransportTemp.fileName);
                 //初始化信息素矩阵
                 pheromone = new double[vrpTransportTemp.clientNum][vrpTransportTemp.clientNum];
@@ -151,8 +150,7 @@ public class ACO implements Serializable {
             baseUpdateStrategy = new UpdateStrategy4Case1();
             updatePheromoneBySolution(result, pheromoneData.getPheromone());
             //更新信息素
-            baseUpdateStrategy.updateByAntRule2(pheromoneData.getPheromone(), bestAnt, vrpTransportTemp,parameter);
-            //再次广播变量
+            baseUpdateStrategy.updateByAntRule1(pheromoneData.getPheromone(), bestAnt, vrpTransportTemp,parameter);
             //create pheromone file in HDFS
             HDFSUtil.CreateFile(PublicPathEnum.PheromoneData.toString(), GsonUtil.gson.toJson(pheromoneData));
             ++RHOCounter;

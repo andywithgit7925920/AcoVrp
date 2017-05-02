@@ -8,6 +8,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import updatestrategy.BaseUpdateStrategy;
 import util.DataUtil;
 import util.GsonUtil;
+import util.HDFSUtil;
 
 import java.io.IOException;
 
@@ -21,6 +22,15 @@ public class ReducerStep2 extends
 		// System.out.println("key--->"+key);
 		// System.out.println("values--->"+values);
 		// find the best solution
+
+		//DEBUG
+		StringBuilder sb = new StringBuilder();
+		for (AntTempEntity val : values) {
+			sb.append(val.getAnt().toString()).append("||");
+		}
+		HDFSUtil.CreateFile("temp2/"+System.currentTimeMillis()+"/data.vrp",sb.toString());
+
+
 		Ant bestAnt = null;
 		Double bestLength = Double.MAX_VALUE;
 		for (AntTempEntity val : values) {

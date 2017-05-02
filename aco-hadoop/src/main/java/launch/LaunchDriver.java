@@ -32,7 +32,6 @@ public class LaunchDriver {
     }
 
     public static void getResult(String val) throws Exception {
-        Solution[] solutions = new Solution[5];
         long time1 = System.currentTimeMillis();
         String fileName = "./solomon/" + val + ".vrp";
         ACO aco = new ACO();
